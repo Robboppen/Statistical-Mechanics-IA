@@ -1,0 +1,665 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, hyperref, geometry, booktabs}
+\geometry{margin=2.5cm}
+
+\title{Resúmenes Estructurados: Máquinas de Boltzmann y Mecánica Estadística}
+\author{Preparado para el curso de Mecánica Estadística --- IFA, Universidad de Valparaíso}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent Este documento resume 11 papers sobre Máquinas de Boltzmann, modelos basados en
+energía y mecánica estadística, organizados en torno a cuatro ejes temáticos: (1) la
+Distribución de Boltzmann, (2) pesos probabilísticos y modelos basados en energía, (3) la
+función de partición $Z$, y (4) ensembles como lenguaje de inferencia.
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Jaynes (1957a) --- Information Theory and Statistical Mechanics}
+
+\subsection*{Referencia completa}
+E. T. Jaynes (1957). \textit{Information Theory and Statistical Mechanics}. Physical Review,
+106(4), 620--630. DOI: \href{https://doi.org/10.1103/PhysRev.106.620}{10.1103/PhysRev.106.620}.
+\cite{jaynes1957a}
+
+\subsection*{Pregunta central}
+¿Puede la mecánica estadística de equilibrio derivarse como un caso particular de inferencia
+estadística (máxima entropía), sin presuponer hipótesis físicas adicionales como la
+ergodicidad o la equiprobabilidad a priori?
+
+\subsection*{Aporte principal}
+Jaynes demuestra que maximizar la entropía de Shannon sujeta a los valores esperados conocidos
+(p.\ ej.\ la energía) reproduce exactamente las reglas de cálculo de la mecánica estadística de
+Gibbs, incluida la función de partición. Reinterpreta así la mecánica estadística como un caso
+de inferencia bayesiana --- ``mecánica estadística subjetiva'' --- eliminando la necesidad de
+supuestos ergódicos.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- es la derivación original vía máxima entropía; artículo fundacional del eje.
+  \item \textbf{Pesos probabilísticos y EBM:} No aplica directamente --- no trata redes neuronales, pero establece el marco $P(s) \propto e^{-\beta E(s)}$ que el aprendizaje automático reinterpretará décadas después como EBM.
+  \item \textbf{Función de partición $Z$:} Sí --- introduce $Z(\lambda)$ explícitamente como normalizador derivado de los multiplicadores de Lagrange.
+  \item \textbf{Ensembles como inferencia:} Sí --- es el artículo fundacional de esta equivalencia.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+p_i = \exp\{-[\lambda_0+\lambda_1 f_1(x_i)+\cdots+\lambda_m f_m(x_i)]\}
+\end{equation}
+\begin{equation}
+Z(\lambda_1,\ldots,\lambda_m) = \sum_i \exp\{-[\lambda_1 f_1(x_i)+\cdots+\lambda_m f_m(x_i)]\}, \qquad
+\langle f(x)\rangle = -\frac{\partial \ln Z}{\partial \lambda}
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``we must use that probability distribution which has maximum entropy''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Es el origen conceptual de los cuatro ejes temáticos del proyecto; debería abrir la presentación como marco unificador. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Jaynes (1957b) --- Information Theory and Statistical Mechanics II}
+
+\subsection*{Referencia completa}
+E. T. Jaynes (1957). \textit{Information Theory and Statistical Mechanics II}. Physical
+Review, 108(2), 171--190. DOI: \href{https://doi.org/10.1103/PhysRev.108.171}{10.1103/PhysRev.108.171}.
+\cite{jaynes1957b}
+
+\subsection*{Pregunta central}
+¿Cómo se extiende el principio de máxima entropía al formalismo de matriz de densidad
+(sistemas cuánticos), y qué relación guarda con la irreversibilidad y la pérdida de
+información?
+
+\subsection*{Aporte principal}
+Extiende el tratamiento de inferencia estadística de la Parte I al formalismo cuántico de la
+matriz de densidad, mostrando que la matriz de densidad de máxima entropía sujeta a
+restricciones adopta la forma de Boltzmann-Gibbs cuántica. Introduce el principio de
+``complementariedad estadística'': las probabilidades verificables empíricamente corresponden
+necesariamente a predicciones incompletas, vinculando irreversibilidad con pérdida de
+información.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- versión cuántica vía matriz de densidad, $\rho \propto e^{-\beta H}$.
+  \item \textbf{Pesos probabilísticos y EBM:} No aplica directamente --- es física cuántica formal, no machine learning, aunque la entropía de von Neumann reaparece en EBMs variacionales modernos.
+  \item \textbf{Función de partición $Z$:} Sí --- $Z = \mathrm{Tr}(e^{-\beta H})$ en el formalismo de operadores.
+  \item \textbf{Ensembles como inferencia:} Sí --- generaliza el argumento de inferencia a sistemas no estacionarios e irreversibles.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+S = -\mathrm{Tr}(\rho \ln \rho)
+\end{equation}
+\begin{equation}
+\langle F \rangle = \sum_i w_i \langle i|F|i\rangle = \mathrm{Tr}(\rho F)
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``the predictive aspect of statistical mechanics as a form of statistical inference''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Media & Profundiza el marco teórico, pero el formalismo cuántico de matriz de densidad excede el alcance de una charla introductoria; útil como referencia de rigor, no como contenido central. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Ackley, Hinton \& Sejnowski (1985) --- A Learning Algorithm for Boltzmann Machines}
+
+\subsection*{Referencia completa}
+D. H. Ackley, G. E. Hinton \& T. J. Sejnowski (1985). \textit{A Learning Algorithm for
+Boltzmann Machines}. Cognitive Science, 9(1), 147--169. DOI:
+\href{https://doi.org/10.1207/s15516709cog0901_7}{10.1207/s15516709cog0901\_7}. \cite{ackley1985}
+
+\subsection*{Pregunta central}
+¿Puede una red estocástica de unidades binarias con conexiones simétricas aprender, mediante
+una regla de actualización completamente local, a reproducir una distribución de probabilidad
+objetivo sobre sus unidades visibles?
+
+\subsection*{Aporte principal}
+Introduce la Máquina de Boltzmann: una red cuya dinámica estocástica converge al equilibrio
+térmico (distribución de Boltzmann). Deriva una regla de aprendizaje basada en el gradiente de
+una medida de divergencia $G$ (equivalente a la divergencia de Kullback-Leibler) que depende
+solo de correlaciones locales $\langle s_i s_j\rangle$, calculables comparando una fase
+``despierta'' (datos fijos) y una fase ``dormida'' (equilibrio libre).
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- es la base física de la dinámica de la red: $P_\alpha \propto e^{-E_\alpha/T}$.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- define explícitamente la energía y la interpretación de $w_{ij}$ como acoplamientos aprendibles; es el eje central del paper.
+  \item \textbf{Función de partición $Z$:} Implícita --- $Z$ normaliza $P_\alpha$, pero el algoritmo está diseñado precisamente para \emph{evitar} calcularla explícitamente, usando diferencias de correlaciones en su lugar.
+  \item \textbf{Ensembles como inferencia:} Sí --- el aprendizaje se plantea como minimización de una divergencia entre la distribución de los datos y la del modelo, precursor directo de la lectura bayesiana moderna.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+E = -\sum_{i<j} w_{ij}\,s_i s_j + \sum_i \theta_i\, s_i
+\end{equation}
+\begin{equation}
+\Delta w_{ij} = \varepsilon\left(\langle s_i s_j\rangle_{\text{datos}} - \langle s_i s_j\rangle_{\text{libre}}\right)
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``a general learning rule for modifying the connection strengths''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Artículo fundacional de la Máquina de Boltzmann; conecta directamente energía, pesos y aprendizaje. Imprescindible. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{LeCun, Chopra, Hadsell, Ranzato \& Huang (2006) --- A Tutorial on Energy-Based Learning}
+
+\subsection*{Referencia completa}
+Y. LeCun, S. Chopra, R. Hadsell, M. Ranzato \& F. J. Huang (2006). \textit{A Tutorial on
+Energy-Based Learning}. En: \textit{Predicting Structured Data}, MIT Press.
+\href{http://yann.lecun.com/exdb/publis/pdf/lecun-06.pdf}{PDF}. \cite{lecun2006}
+
+\subsection*{Pregunta central}
+¿Cómo puede formularse el aprendizaje automático --- probabilístico y no probabilístico ---
+dentro de un único marco unificado basado en funciones de energía, evitando el problema de la
+normalización?
+
+\subsection*{Aporte principal}
+Generaliza la distribución de Boltzmann a una clase amplia de modelos de aprendizaje (EBMs),
+donde la inferencia es minimización de energía y el aprendizaje consiste en asignar energías
+bajas a configuraciones observadas. Muestra que los modelos probabilísticos son un caso
+particular de EBM (cuando se exige normalización), liberando el diseño de arquitecturas de la
+necesidad de calcular $Z$.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- $p(x) \propto e^{-E(x)}$ es el punto de partida explícito de los EBM.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- es la referencia central que define formalmente los EBM y la energía parametrizada $E_\theta$.
+  \item \textbf{Función de partición $Z$:} Sí --- discute extensamente la intratabilidad de $Z$ y cómo el enfoque EBM la evita por diseño.
+  \item \textbf{Ensembles como inferencia:} Parcial --- discute la función de pérdida como sustituto de $-\ln$ verosimilitud, pero no enmarca explícitamente el aprendizaje como inferencia bayesiana/ensembles.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+P(Y\mid X) = \frac{e^{-\beta E(Y,X)}}{\int_{y} e^{-\beta E(y,X)}\,dy}
+\end{equation}
+\begin{equation}
+W \leftarrow W - \eta\left(\frac{\partial E(Y_i,X_i,W)}{\partial W} - \frac{\partial E(\bar Y_i,X_i,W)}{\partial W}\right)
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``associating a scalar energy to each configuration of the variables''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Formaliza por completo el eje de modelos basados en energía; es la pieza central para conectar física e IA moderna. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Cheng, Chen \& Wang (2018) --- Boltzmann Machines versus Born Machines}
+
+\subsection*{Referencia completa}
+S. Cheng, J. Chen \& L. Wang (2018). \textit{Information Perspective to Probabilistic
+Modeling: Boltzmann Machines versus Born Machines}. Entropy, 20(8), 583. DOI:
+\href{https://doi.org/10.3390/e20080583}{10.3390/e20080583}. \cite{cheng2018}
+
+\subsection*{Pregunta central}
+¿Qué diferencias en capacidad expresiva existen entre los modelos generativos basados en
+energía (Máquinas de Boltzmann) y los basados en estados cuánticos (Máquinas de Born), y cómo
+lo revela la teoría de la información clásica frente a la cuántica?
+
+\subsection*{Aporte principal}
+Compara las RBM ($p(v)=e^{-E(v)}/Z$) con las ``Born machines'' ($p(v)=|\Psi(v)|^2/N$) usando
+cotas de información mutua y entropía de entrelazamiento de Rényi. Muestra que diseñar
+arquitecturas (conexiones locales/dispersas) que respeten el patrón de información mutua del
+dataset mejora la eficiencia de aprendizaje en ambos enfoques, validado en MNIST.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- el RBM clásico es el objeto de comparación directa.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- analiza explícitamente la arquitectura de pesos $w_{ij}$ del RBM y su relación con la información mutua de los datos.
+  \item \textbf{Función de partición $Z$:} Sí --- $Z$ aparece en la normalización del RBM y se discute su intratabilidad como motivación de los enfoques cuánticos alternativos.
+  \item \textbf{Ensembles como inferencia:} Indirecta --- no usa el lenguaje de ensembles/Bayes; se centra en teoría de la información clásica y cuántica.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+p(v) = \frac{e^{-E(v)}}{Z}, \qquad Z = \sum_v e^{-E(v)}
+\end{equation}
+\begin{equation}
+p(v) = \frac{|\Psi(v)|^2}{N} \qquad \text{(Máquina de Born)}
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``have the potential to be good generative models for machine learning''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Media & Aporta una conexión interesante entre los ejes 1 y 3, pero el contenido cuántico (entrelazamiento, Born machines) es denso para 10 minutos; mejor como nota comparativa breve. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Pu\v{s}karov \& Cort\'es Cubero (2018) --- Machine Learning Algorithms Based on Generalized Gibbs Ensembles}
+
+\subsection*{Referencia completa}
+T. Pu\v{s}karov \& A. Cort\'es Cubero (2018). \textit{Machine Learning Algorithms Based on
+Generalized Gibbs Ensembles}. arXiv:1804.03546 [cond-mat.stat-mech]. \cite{puskarov2018}
+
+\subsection*{Pregunta central}
+¿Puede sustituirse la máquina de Boltzmann cuántica --- de entrenamiento ineficiente debido a
+la no conmutatividad de operadores --- por un algoritmo basado en el ensemble de Gibbs
+generalizado (GGE), que sí pueda entrenarse eficientemente por descenso de gradiente?
+
+\subsection*{Aporte principal}
+Propone un algoritmo de aprendizaje basado en el GGE, que reemplaza la única temperatura
+inversa $\beta$ por un conjunto de ``temperaturas efectivas'' $\beta_n$ asociadas a cargas
+conservadas de un Hamiltoniano integrable, y demuestra que es la única máquina de Boltzmann
+cuántica entrenable eficientemente, gracias a que las cargas conservadas conmutan entre sí. Su
+versión clásica simplificada clasifica MNIST con $\sim$36 veces menos parámetros que una RBM
+comparable.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- el GGE es una generalización directa del ensemble canónico/distribución de Boltzmann.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- las ``temperaturas efectivas'' $\beta_n$ desempeñan un papel análogo a los pesos $w_{ij}$.
+  \item \textbf{Función de partición $Z$:} Sí --- $Z=\mathrm{Tr}(e^{-\sum_n \beta_n Q_n})$ generaliza la función de partición canónica a múltiples cargas conservadas.
+  \item \textbf{Ensembles como inferencia:} Sí --- es el ejemplo más directo de extender el diccionario ensemble$\leftrightarrow$ML del eje 4 más allá del ensemble canónico.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+P_\psi = \frac{e^{-\sum_n \beta_n Q_n}}{Z}, \qquad Z = \mathrm{Tr}\!\left(e^{-\sum_n \beta_n Q_n}\right)
+\end{equation}
+\begin{equation}
+\mathcal{L} = S(\rho_{\text{data}}\|\rho) = \mathrm{Tr}[\rho_{\text{data}}\log\rho_{\text{data}}] - \mathrm{Tr}[\rho_{\text{data}}\log\rho]
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``GGE algorithm turns out to be an optimal implementation of a quantum Boltzmann machine''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Media & Extiende el eje ``ensembles como inferencia'' de forma original (generaliza $\beta$ y $Z$), pero el contexto cuántico (cargas conservadas, integrabilidad) exige tiempo de exposición; útil como ejemplo avanzado si hay margen. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Mazzanti \& Romero (2020) --- Efficient Evaluation of the Partition Function of RBMs with AIS}
+
+\subsection*{Referencia completa}
+F. Mazzanti \& E. Romero (2020). \textit{Efficient Evaluation of the Partition Function of
+RBMs with Annealed Importance Sampling}. arXiv:2007.11926 [cs.LG]. \cite{mazzanti2020}
+
+\subsection*{Pregunta central}
+¿Cómo elegir la distribución inicial y los parámetros de Annealed Importance Sampling (AIS)
+para estimar eficientemente $\log Z$ de una RBM con pocas muestras y cadenas intermedias, sin
+sacrificar precisión?
+
+\subsection*{Aporte principal}
+Muestra que partir de una distribución inicial $p_0(x)$ construida a partir de los sesgos
+visibles del propio RBM (en vez de la distribución uniforme) reduce drásticamente el error de
+la estimación de $\log Z$ vía AIS, tanto en modelos exactamente solubles como en problemas
+reales (MNIST, Web-w6a), permitiendo monitorear $Z$ durante el entrenamiento con bajo costo
+computacional.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Indirecta --- el objeto estimado es la propia distribución de Boltzmann del RBM.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- usa los pesos y sesgos $w_{ij}, b_i$ del RBM para construir la distribución inicial óptima de AIS.
+  \item \textbf{Función de partición $Z$:} Sí --- es el tema central y exclusivo del paper: estimación práctica y eficiente de $Z$.
+  \item \textbf{Ensembles como inferencia:} No aplica directamente --- es un método numérico de muestreo, no un argumento de inferencia bayesiana.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+\log(Z_{\text{AIS}}) = \log\langle Z_n\rangle_s = \log\left[\frac{1}{N_s}\sum_i e^{s_i}\right] \approx \log(Z_n)
+\end{equation}
+\begin{equation}
+\langle x \rangle_n = \frac{1}{e^{B}+1} \qquad \text{(condición de sesgo óptimo $B$ vía minimización KL)}
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``a suitable starting probability distribution $p_0(x)$ can lead to a big improvement''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Aborda directamente el problema central del eje de la función de partición con una solución práctica y moderna; conecta teoría con implementación real. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Dawid \& LeCun (2023) --- Introduction to Latent Variable Energy-Based Models}
+
+\subsection*{Referencia completa}
+A. Dawid \& Y. LeCun (2023). \textit{Introduction to Latent Variable Energy-Based Models: A
+Path Towards Autonomous Machine Intelligence}. Les Houches Summer School Lecture Notes;
+Journal of Statistical Mechanics: Theory and Experiment. DOI:
+\href{https://doi.org/10.1088/1742-5468/ad292b}{10.1088/1742-5468/ad292b}. arXiv:2306.02572.
+\cite{dawid2023}
+
+\subsection*{Pregunta central}
+¿Cómo deben extenderse los EBM con variables latentes para soportar predicción bajo
+incertidumbre y constituir una arquitectura de ``inteligencia artificial autónoma'' (JEPA) más
+allá del aprendizaje supervisado o por refuerzo?
+
+\subsection*{Aporte principal}
+Introduce los EBM de variable latente, $F_w(x,y)=\min_z E_w(x,y,z)$ (o su versión
+marginalizada vía energía libre), mostrando cómo minimizar/marginalizar sobre $z$ absorbe la
+incertidumbre irreducible de la predicción. Propone la arquitectura JEPA jerárquica como camino
+hacia sistemas de IA con ``sentido común''.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- recupera explícitamente la distribución de Gibbs-Boltzmann como puente entre EBM y modelos probabilísticos.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- es una extensión moderna directa del marco EBM, añadiendo variables latentes.
+  \item \textbf{Función de partición $Z$:} Sí --- discute la marginalización sobre $z$, formalmente idéntica a la energía libre $F=-kT\ln Z$.
+  \item \textbf{Ensembles como inferencia:} Parcial --- la marginalización sobre variables latentes es análoga al ensemble canónico, aunque el paper no desarrolla explícitamente la lectura bayesiana.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+P(y\mid x) = \frac{e^{-\beta F(x,y)}}{\int dy'\, e^{-\beta F(x,y')}}
+\end{equation}
+\begin{equation}
+F_w(x,y) = -\frac{1}{\beta}\log \int dz'\, e^{-\beta E_w(x,y,z')}
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``the energy function is not the objective function to minimize''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Conecta los ejes de EBM y función de partición con la frontera actual de la investigación en IA (JEPA, LeCun), dando proyección y actualidad a la charla. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Carbone (2025) --- Hitchhiker's Guide on Energy-Based Models}
+
+\subsection*{Referencia completa}
+D. Carbone (2025). \textit{Hitchhiker's Guide on the Relation of Energy-Based Models with
+Other Generative Models, Sampling and Statistical Physics: A Comprehensive Review}.
+Transactions on Machine Learning Research, 05/2025. arXiv:2406.13661.
+\href{https://openreview.net/forum?id=VTgixSbrJI}{OpenReview}. \cite{carbone2025}
+
+\subsection*{Pregunta central}
+¿Cómo se relacionan los EBM con otros paradigmas generativos (GANs, VAEs, normalizing flows), y
+qué papel desempeñan los métodos de muestreo (MCMC) y la física estadística de no equilibrio en
+su entrenamiento moderno?
+
+\subsection*{Aporte principal}
+Ofrece una revisión exhaustiva dirigida a físicos que traduce el lenguaje de los EBM al de la
+física estadística, cubriendo desde la función de energía/partición hasta las técnicas de
+entrenamiento ``sampling-free'' más recientes, y propone integrar herramientas de termodinámica
+de no equilibrio (dinámica de Langevin, teoremas de fluctuación) en el entrenamiento de EBM.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- es el punto de partida explícito de toda la revisión.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- eje central de la revisión completa.
+  \item \textbf{Función de partición $Z$:} Sí --- discute extensamente su intratabilidad y los métodos para evitarla o estimarla (MCMC, sampling-free).
+  \item \textbf{Ensembles como inferencia:} Parcial --- discute el lenguaje físico (Langevin, fluctuaciones) pero no enfatiza la lectura bayesiana del eje 4 tan explícitamente como Jaynes.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+\rho_\theta(x) = \frac{1}{Z_\theta} e^{-U_\theta(x)}, \qquad Z_\theta = \int e^{-U_\theta(x)}\,dx
+\end{equation}
+\begin{equation}
+dX_t = -\nabla U(x)\,dt + \sqrt{2}\,dW_t \qquad \text{(dinámica de Langevin para muestreo)}
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``highlighting the significance of energy functions and partition functions''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Media & Es una síntesis moderna excelente que vincula los cuatro ejes con el estado del arte, pero su amplitud (GANs, flows, no equilibrio) excede lo abordable en 10 minutos; mejor como mapa de referencia que como contenido a desarrollar. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Hohm (2026) --- Lecture Notes on Statistical Physics and Neural Networks}
+
+\subsection*{Referencia completa}
+O. Hohm (2026). \textit{Lecture Notes on Statistical Physics and Neural Networks}.
+arXiv:2605.06394 [cond-mat.dis-nn]. \cite{hohm2026}
+
+\subsection*{Pregunta central}
+¿Cómo puede presentarse la física estadística clásica (distribución de Boltzmann-Gibbs, modelo
+de Ising, grupo de renormalización) como base pedagógica directa para entender las máquinas de
+Boltzmann y el aprendizaje profundo moderno?
+
+\subsection*{Aporte principal}
+Construye un puente didáctico explícito entre el grupo de renormalización (RG) y el
+entrenamiento de RBM, mostrando que ``integrar'' las neuronas ocultas de una RBM es
+formalmente el mismo procedimiento que integrar grados de libertad en RG. Cierra con una
+introducción a modelos de lenguaje de gran escala desde la óptica de la física estadística.
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- eje central del capítulo 2: deriva la distribución de Boltzmann-Gibbs para espines de Ising.
+  \item \textbf{Pesos probabilísticos y EBM:} Sí --- define la energía de la RBM y su regla de aprendizaje en términos de $w_{i\alpha}$.
+  \item \textbf{Función de partición $Z$:} Sí --- muestra cómo $Z$ se cancela al calcular probabilidades condicionales $P(h\mid v)$, conectando con el ``integrar variables'' del RG.
+  \item \textbf{Ensembles como inferencia:} Parcial --- no usa explícitamente el lenguaje bayesiano, pero la analogía RG$\leftrightarrow$aprendizaje profundo es conceptualmente afín al eje 4.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+E(v,h) = -\sum_{i,\alpha} w_{i\alpha}\, v_i h_\alpha - \sum_i b_i v_i - \sum_\alpha c_\alpha h_\alpha
+\end{equation}
+\begin{equation}
+\Delta w_{i\alpha} = \varepsilon\left(\langle v_i h_\alpha\rangle_{\text{data}} - \langle v_i h_\alpha\rangle_{B}\right)
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``hidden neurons are integrated out as in the renormalization group''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Alta & Material pedagógico reciente que conecta explícitamente los cuatro ejes con el grupo de renormalización y el deep learning; ancla la charla en un marco didáctico único. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section{Merhav (2026) --- Grouped Reverse Importance Sampling for the Partition Function}
+
+\subsection*{Referencia completa}
+N. Merhav (2026). \textit{Grouped Reverse Importance Sampling for the Partition Function}.
+arXiv:2606.26748 [cs.IT]. \cite{merhav2026}
+
+\subsection*{Pregunta central}
+¿Puede reducirse el error cuadrático medio (MSE) en la estimación de la función de partición
+$Z(\beta)$ agrupando muestras de la distribución de Boltzmann y aplicándoles un peso conjunto,
+en vez de ponderar cada muestra por separado (RIS estándar)?
+
+\subsection*{Aporte principal}
+Introduce el muestreo de importancia inversa agrupado (GRIS) en tres variantes de creciente
+sofisticación (NOL, FSW, VSW), demuestra que el peso conjunto óptimo depende solo de la energía
+total del grupo, y muestra reducciones del MSE de 20--65\% (NOL) y de hasta un 30--40\%
+adicional (VSW) frente al RIS estándar ($k=1$).
+
+\subsection*{Conexión con los ejes temáticos}
+\begin{itemize}
+  \item \textbf{Distribución de Boltzmann:} Sí --- el método estima $Z(\beta)$ de $p(x)=e^{-\beta U(x)}/Z(\beta)$, la distribución de Boltzmann continua.
+  \item \textbf{Pesos probabilísticos y EBM:} No aplica directamente --- es un método estadístico de muestreo, no involucra pesos aprendibles de una red.
+  \item \textbf{Función de partición $Z$:} Sí --- es el objeto exclusivo de estudio del paper.
+  \item \textbf{Ensembles como inferencia:} Indirecta --- vincula el problema con la evaluación de evidencia bayesiana y cantidades termodinámicas, sin desarrollar el diccionario completo del eje 4.
+\end{itemize}
+
+\subsection*{Ecuaciones o resultados clave}
+\begin{equation}
+Z(\beta) = \int_{\mathcal X} e^{-\beta U(x)}\,dx, \qquad p(x) = \frac{e^{-\beta U(x)}}{Z(\beta)}
+\end{equation}
+\begin{equation}
+\ln \hat Z(\beta) = \ln M - \ln\left[\frac{1}{n}\sum_i m(x_i)\,e^{\beta U(x_i)}\right]
+\end{equation}
+
+\subsection*{Cita textual}
+\begin{quote}
+\textit{``a joint weight function allows a significantly richer freedom for optimization''}
+\end{quote}
+
+\subsection*{Relevancia para una presentación de 10 minutos}
+\begin{tabular}{@{}p{2cm}p{11.5cm}@{}}
+\toprule
+\textbf{Nivel} & \textbf{Justificación} \\
+\midrule
+Baja & Es un desarrollo metodológico reciente y muy técnico (estadística de muestreo) centrado exclusivamente en el eje 3; demasiado especializado para 10 minutos, aunque sirve como nota de ``investigación activa'' al cierre. \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\hrule
+\bigskip
+
+%=================================================================
+\section*{Referencias}
+
+\begin{thebibliography}{99}
+
+\bibitem{jaynes1957a}
+Jaynes, E. T. (1957). Information Theory and Statistical Mechanics. \textit{Physical Review},
+106(4), 620--630. DOI: 10.1103/PhysRev.106.620.
+
+\bibitem{jaynes1957b}
+Jaynes, E. T. (1957). Information Theory and Statistical Mechanics II. \textit{Physical
+Review}, 108(2), 171--190. DOI: 10.1103/PhysRev.108.171.
+
+\bibitem{ackley1985}
+Ackley, D. H., Hinton, G. E. \& Sejnowski, T. J. (1985). A Learning Algorithm for Boltzmann
+Machines. \textit{Cognitive Science}, 9(1), 147--169. DOI: 10.1207/s15516709cog0901\_7.
+
+\bibitem{lecun2006}
+LeCun, Y., Chopra, S., Hadsell, R., Ranzato, M. \& Huang, F. J. (2006). A Tutorial on
+Energy-Based Learning. En: \textit{Predicting Structured Data}. MIT Press.
+
+\bibitem{cheng2018}
+Cheng, S., Chen, J. \& Wang, L. (2018). Information Perspective to Probabilistic Modeling:
+Boltzmann Machines versus Born Machines. \textit{Entropy}, 20(8), 583. DOI: 10.3390/e20080583.
+
+\bibitem{puskarov2018}
+Pu\v{s}karov, T. \& Cort\'es Cubero, A. (2018). Machine Learning Algorithms Based on
+Generalized Gibbs Ensembles. arXiv:1804.03546 [cond-mat.stat-mech].
+
+\bibitem{mazzanti2020}
+Mazzanti, F. \& Romero, E. (2020). Efficient Evaluation of the Partition Function of RBMs with
+Annealed Importance Sampling. arXiv:2007.11926 [cs.LG].
+
+\bibitem{dawid2023}
+Dawid, A. \& LeCun, Y. (2023). Introduction to Latent Variable Energy-Based Models: A Path
+Towards Autonomous Machine Intelligence. \textit{Journal of Statistical Mechanics: Theory and
+Experiment}. DOI: 10.1088/1742-5468/ad292b.
+
+\bibitem{carbone2025}
+Carbone, D. (2025). Hitchhiker's Guide on the Relation of Energy-Based Models with Other
+Generative Models, Sampling and Statistical Physics: A Comprehensive Review.
+\textit{Transactions on Machine Learning Research}, 05/2025. arXiv:2406.13661.
+
+\bibitem{hohm2026}
+Hohm, O. (2026). Lecture Notes on Statistical Physics and Neural Networks. arXiv:2605.06394
+[cond-mat.dis-nn].
+
+\bibitem{merhav2026}
+Merhav, N. (2026). Grouped Reverse Importance Sampling for the Partition Function.
+arXiv:2606.26748 [cs.IT].
+
+\end{thebibliography}
+
+\end{document}
