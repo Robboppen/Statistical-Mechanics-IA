@@ -1,0 +1,292 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, hyperref, geometry}
+\geometry{margin=2.5cm}
+
+\title{Estado Actual de la Investigación en\\ Mecánica Estadística Aplicada a la Inteligencia Artificial\\ \large (Documento de estudio personal --- no para presentación)}
+\author{}
+\date{Última actualización: 30 de junio de 2026}
+
+\begin{document}
+\maketitle
+
+\section{Introducción breve}
+
+Este documento es una nota de estudio personal, no un documento de divulgación ni una presentación. Su propósito es tener, en un solo lugar y organizado por \emph{tema} en lugar de por \emph{paper}, un mapa del estado actual de la investigación en la intersección de mecánica estadística e inteligencia artificial, conectado explícitamente con los cuatro ejes de este proyecto (distribución de Boltzmann, pesos probabilísticos y modelos basados en energía, función de partición, ensembles como lenguaje de inferencia). Combina dos fuentes: (a) los once artículos ya reunidos en la carpeta de este repositorio, y (b) una búsqueda adicional de literatura reciente (2024--2026) que sitúa esos once artículos dentro de líneas de investigación activas más amplias. La idea es poder volver a este documento en el futuro y entender rápidamente \emph{qué se sabe}, \emph{quién lo está investigando} y \emph{qué sigue abierto} en cada línea, sin tener que releer cada paper desde cero.
+
+\section{Líneas de investigación activas}
+
+\subsection{L1 --- Inferencia de máxima entropía y ensembles generalizados}
+
+\textbf{Pregunta central.} ¿Qué principio justifica usar la distribución de Boltzmann (o sus generalizaciones) como la distribución de probabilidad ``correcta'' dada información incompleta, y cómo se extiende ese principio cuando hay varias cantidades conservadas simultáneamente?
+
+\textbf{Grupos / papers líderes.} El fundamento es enteramente de Jaynes (1957a, 1957b). En el extremo aplicado, Puškarov \& Cortés Cubero (2018) usan Ensembles de Gibbs Generalizados (GGE) para hacer tratable el entrenamiento de máquinas de Boltzmann cuánticas.
+
+\textbf{Resultados principales hasta ahora.} La distribución de Boltzmann-Gibbs se deriva, sin apelar a ergodicidad, como la distribución de máxima entropía de Shannon compatible con un conjunto de valores esperados conocidos; los multiplicadores de Lagrange asociados a esas restricciones son las temperaturas (inversas) del sistema, y $\ln Z$ es la función generatriz de todos los observables termodinámicos. Cuando el sistema tiene varias cantidades conservadas independientes, el ensemble maximamente no comprometido requiere una temperatura efectiva $\beta_n$ por cada cantidad conservada --- el GGE --- y esto resulta directamente relevante para sistemas cuánticos integrables usados como sustrato de máquinas de Boltzmann cuánticas.
+
+\textbf{Preguntas abiertas.} ¿Cómo elegir, de forma sistemática y no ad-hoc, qué conjunto de restricciones/cantidades conservadas usar al construir un modelo basado en energía para datos que no son físicos? ¿Qué ventaja práctica y cuantificable ofrece un GGE sobre el ensemble canónico estándar al entrenar modelos generativos cuánticos a escala?
+
+\subsection{L2 --- Máquinas de Boltzmann y modelos basados en energía: de Hopfield/Hinton a JEPA}
+
+\textbf{Pregunta central.} ¿Cómo se entrena, de forma escalable, un modelo cuya probabilidad está definida implícitamente por una función de energía, sin tener que normalizar (calcular $Z$) en cada paso?
+
+\textbf{Grupos / papers líderes.} Ackley, Hinton \& Sejnowski (1985) y el tutorial unificador de LeCun et al. (2006); en el extremo más reciente, Dawid \& LeCun (2023/2024) y la línea de arquitecturas JEPA de Yann LeCun (Meta AI/FAIR), que culmina en V-JEPA~2 (Assran et al., 2025).
+
+\textbf{Resultados principales hasta ahora.} Existe un marco unificado --- los modelos basados en energía (EBM) --- que engloba bajo un mismo lenguaje a clasificadores discriminativos, modelos generativos clásicos (RBMs, autoencoders) y, más recientemente, arquitecturas predictivas de variable latente. Estas últimas (JEPA) evitan tanto el cálculo de $Z$ como el muestreo MCMC mediante términos de regularización no contrastiva (anti-colapso de representación) en lugar de una fase negativa explícita, y han demostrado escalar hasta más de un millón de horas de video con planificación robótica \emph{zero-shot} en hardware real (V-JEPA~2).
+
+\textbf{Preguntas abiertas.} ¿Se puede formalizar la regularización ``no contrastiva'' de JEPA dentro del lenguaje de energía libre con el mismo rigor con que la divergencia contrastiva formalizó el entrenamiento de RBMs? ¿Hasta dónde escala este enfoque hacia el objetivo declarado de ``inteligencia artificial autónoma''?
+
+\subsection{L3 --- Función de partición: muestreo, estimación e intratabilidad}
+
+\textbf{Pregunta central.} Dado que $Z$ es intratable para cualquier sistema de tamaño realista, ¿qué estimadores son insesgados, eficientes en varianza y escalables?
+
+\textbf{Grupos / papers líderes.} Mazzanti \& Romero (2020) sobre \emph{Annealed Importance Sampling} (AIS) para RBMs; Merhav (2026), con un esquema mucho más reciente de \emph{Grouped Reverse Importance Sampling} (GRIS).
+
+\textbf{Resultados principales hasta ahora.} Mazzanti y Romero muestran que sustituir la distribución inicial uniforme estándar de AIS por una distribución de partida mejor informada reduce drásticamente la varianza del estimador y el número de pasos de Monte Carlo necesarios, sin perder la propiedad de insesgadez. Merhav, en un trabajo de apenas días de antigüedad respecto a este documento, propone agrupar configuraciones de forma adaptativa dentro de un esquema de muestreo por importancia inversa, mejorando las garantías de varianza frente al AIS clásico en ciertos regímenes.
+
+\textbf{Preguntas abiertas.} ¿Existen cotas teóricas ajustadas sobre el número de muestras necesarias para estimar $Z$ con un error relativo fijo, en función del tamaño de la red? ¿Cómo se comportan estos estimadores en EBMs profundos modernos, mucho más grandes y menos estructurados que una RBM?
+
+\subsection{L4 --- Termodinámica de modelos de difusión generativa}
+
+\textbf{Pregunta central.} ¿El proceso de generación de un modelo de difusión atraviesa transiciones de fase genuinas, en el sentido estricto de la mecánica estadística, y qué implica esto para la calidad, diversidad y memorización de las muestras generadas?
+
+\textbf{Grupos / papers líderes.} Biroli, Bonnaire, de Bortoli \& Mézard (2024, \emph{Nature Communications}); Ambrogioni (2025, \emph{Entropy}). El ``Hitchhiker's Guide'' de Carbone (2025), de la carpeta, es el puente natural hacia esta línea desde el lado de los EBMs.
+
+\textbf{Resultados principales hasta ahora.} Biroli et al. identifican dos transiciones dinámicas durante el proceso generativo inverso de un modelo de difusión: una transición de ``especiación'' (de tipo ruptura de simetría, donde emerge la estructura gruesa de los datos) y una transición de ``colapso'' (de tipo vítreo, donde la trayectoria converge hacia un punto de datos memorizado), con tiempos críticos calculables a partir del espectro de la matriz de correlación de los datos y de estimaciones de entropía en exceso. Ambrogioni formaliza este comportamiento explícitamente como termodinámica estadística: transición de fase, ruptura de simetría e inestabilidad crítica en el proceso de muestreo.
+
+\textbf{Preguntas abiertas.} ¿Puede usarse la posición de estas transiciones como herramienta práctica de diagnóstico --- por ejemplo, para detectar memorización del conjunto de entrenamiento o para fijar de forma óptima el número de pasos de muestreo? ¿Qué papel juega la dimensión efectiva (intrínseca) de los datos en la posición de las transiciones?
+
+\subsection{L5 --- Paisajes de energía, vidrios de espín y sobreajuste en modelos basados en energía}
+
+\textbf{Pregunta central.} ¿Puede describirse la geometría del paisaje de energía/pérdida de un modelo de aprendizaje --- sus mínimos, puntos de silla, barreras --- con las mismas herramientas que describen sistemas físicos desordenados (vidrios de espín, método de réplicas, teoría de matrices aleatorias), y qué dice esto sobre cuándo un modelo memoriza en vez de generalizar?
+
+\textbf{Grupos / papers líderes.} Hohm (2026, notas de clase) como puente pedagógico Ising-RG-redes; en el frente de investigación: Liao et al. (2024), Winer \& Hanin (2025), Ariosto (2025), Catania, Decelle, Furtlehner \& Seoane (2025), Boyd, Crutchfield, Gu \& Binder (2025) y Peraza Coppola, Helias \& Ringel (2025).
+
+\textbf{Resultados principales hasta ahora.} Winer \& Hanin tratan un perceptrón multicapa de inicialización aleatoria como un hamiltoniano sobre sus entradas y calculan, vía el método de réplicas, la entropía del paisaje de energía cerca de los mínimos casi globales. Catania et al. desarrollan un marco de teoría de matrices aleatorias que predice el punto óptimo de \emph{early stopping} en modelos basados en energía entrenados con datos finitos --- el análogo, para EBMs, de la validación cruzada generalizada. Boyd et al. reformulan el sobreajuste como un fenómeno termodinámico genuino: un motor que extrae trabajo de datos sufre una disipación de energía divergente exactamente cuando el modelo sobreajusta. Peraza Coppola, Helias \& Ringel extienden el grupo de renormalización a redes profundas para explicar leyes de escala y universalidad en las curvas de aprendizaje.
+
+\textbf{Preguntas abiertas.} ¿Existe una transición vítrea genuina (con ruptura de la simetría de réplicas) en el entrenamiento de EBMs modernos a gran escala, o el paralelismo con vidrios de espín se rompe fuera del régimen de campo medio? ¿Puede la ``temperatura termodinámica del sobreajuste'' de Boyd et al. convertirse en un criterio práctico de regularización, análogo a un \emph{weight decay} con justificación física?
+
+\subsection{L6 --- Frontera cuántica-clásica: máquinas de Boltzmann cuánticas y modelos generativos basados en estados cuánticos}
+
+\textbf{Pregunta central.} ¿Cómo se extienden los conceptos de energía, temperatura y función de partición de las máquinas de Boltzmann clásicas a modelos generativos cuánticos, y qué ventaja de expresividad o de eficiencia de muestreo ofrece esa extensión?
+
+\textbf{Grupos / papers líderes.} Cheng, Chen \& Wang (2018) comparando Boltzmann machines y Born machines; Puškarov \& Cortés Cubero (2018) sobre GGEs en QBMs; Huijgen, Coopmans, Najafi, Benedetti \& Kappen (2024) sobre entrenamiento práctico de QBMs.
+
+\textbf{Resultados principales hasta ahora.} Cheng et al. muestran, desde teoría de la información, que las Born machines (probabilidad como módulo al cuadrado de una amplitud cuántica) pueden representar ciertas distribuciones con menos parámetros que una Boltzmann machine clásica equivalente, con la ventaja acotada por la entropía de entrelazamiento de Rényi. Huijgen et al. introducen un esquema de bucle anidado --- un $\beta$-VQE interno que aproxima los valores esperados de la QBM y un bucle externo que minimiza la entropía relativa al estado objetivo --- que permite entrenar QBMs en hardware cuántico ruidoso de la era NISQ usando representaciones de bajo rango.
+
+\textbf{Preguntas abiertas.} ¿En qué régimen de tamaño o conectividad ofrece un modelo generativo cuántico una ventaja demostrable sobre su contraparte clásica? ¿Cómo escalan estos esquemas de entrenamiento ($\beta$-VQE, GGE) con el ruido de hardware NISQ real, fuera de los tamaños de demostración actuales?
+
+\section{Resumen individual de cada paper de la carpeta}
+
+\subsection{Jaynes (1957a) --- ``Information Theory and Statistical Mechanics''}
+\textbf{Referencia.} E.~T.~Jaynes, \textit{Phys. Rev.} \textbf{106}(4), 620--630 (1957). \cite{jaynesI}
+
+\textbf{Línea de investigación.} L1.
+
+\textbf{Resumen.} Jaynes demuestra que la mecánica estadística de equilibrio puede derivarse íntegramente como un caso particular de inferencia estadística, sin invocar ergodicidad ni promedios temporales. Dado un conjunto de valores esperados conocidos (p.~ej. la energía media), el principio de máxima entropía de Shannon selecciona, entre todas las distribuciones compatibles con esa información, la menos sesgada --- y esa distribución es exactamente la distribución de Boltzmann-Gibbs. Introduce el formalismo de multiplicadores de Lagrange que se identifican con la temperatura inversa $\beta$.
+
+\textbf{Conexión con los 4 ejes.} Es el fundamento teórico del eje 1 (por qué la distribución de Boltzmann es la distribución ``correcta'' dada información parcial), del eje 3 (origen variacional de $Z$ como normalizador ligado a los multiplicadores de Lagrange) y del eje 4 (el ensemble entendido como estado de conocimiento, no como colección física de copias, es la semilla de leer el aprendizaje automático como inferencia).
+
+\subsection{Jaynes (1957b) --- ``Information Theory and Statistical Mechanics II''}
+\textbf{Referencia.} E.~T.~Jaynes, \textit{Phys. Rev.} \textbf{108}(2), 171--190 (1957). \cite{jaynesII}
+
+\textbf{Línea de investigación.} L1.
+
+\textbf{Resumen.} Continuación directa del artículo anterior: Jaynes extiende el formalismo de máxima entropía a ensembles con múltiples restricciones simultáneas, deriva las relaciones termodinámicas usuales (energía libre, entropía, calor específico) como propiedades analíticas de $\ln Z$, y discute la generalización a ensembles con varios multiplicadores de Lagrange independientes.
+
+\textbf{Conexión con los 4 ejes.} Ejes 3 y 4 de forma explícita: aquí aparecen ya, en 1957, las herramientas (ensembles con múltiples $\beta_n$) que Puškarov \& Cortés Cubero retoman casi setenta años después para entrenar máquinas de Boltzmann cuánticas.
+
+\subsection{Ackley, Hinton \& Sejnowski (1985) --- ``A Learning Algorithm for Boltzmann Machines''}
+\textbf{Referencia.} D.~H.~Ackley, G.~E.~Hinton, T.~J.~Sejnowski, \textit{Cognitive Science} \textbf{9}(1), 147--169 (1985). \cite{ackley1985estado}
+
+\textbf{Línea de investigación.} L2.
+
+\textbf{Resumen.} El artículo fundacional que presenta la Máquina de Boltzmann como una red estocástica con unidades visibles y ocultas, deriva la regla de aprendizaje basada en la diferencia de correlaciones entre una fase ``clamped'' (datos) y una fase libre (modelo), y muestra empíricamente que la red aprende representaciones internas útiles. Es el artículo citado de forma explícita por el Comité Nobel de Física 2024.
+
+\textbf{Conexión con los 4 ejes.} Los cuatro ejes simultáneamente: distribución de Boltzmann (la dinámica estocástica converge a ella), pesos probabilísticos (la regla de aprendizaje ajusta $w_{ij}$ localmente), función de partición ($Z$ se elimina del gradiente vía muestreo) y ensembles (la regla de aprendizaje es, literalmente, una comparación de dos ensembles).
+
+\subsection{LeCun, Chopra, Hadsell, Ranzato \& Huang (2006) --- ``A Tutorial on Energy-Based Learning''}
+\textbf{Referencia.} Y.~LeCun, S.~Chopra, R.~Hadsell, M.~Ranzato, F.~J.~Huang, NYU/Courant Institute, v1.0 (2006). \cite{lecun2006estado}
+
+\textbf{Línea de investigación.} L2.
+
+\textbf{Resumen.} Este tutorial unifica, bajo el lenguaje de ``energía'', una familia amplísima de modelos de aprendizaje (clasificadores discriminativos, modelos generativos, máquinas de margen máximo), mostrando que entrenar cualquiera de ellos equivale a diseñar una función de pérdida que da forma al paisaje de energía: empujarla hacia abajo en las configuraciones observadas y hacia arriba en el resto. Propone una taxonomía de funciones de pérdida según si requieren o evitan calcular $Z$.
+
+\textbf{Conexión con los 4 ejes.} Eje 2 de forma central (define formalmente qué es un modelo basado en energía); eje 3 (clasifica los métodos de entrenamiento precisamente según cómo evitan o aproximan $Z$).
+
+\subsection{Cheng, Chen \& Wang (2018) --- ``Information Perspective to Probabilistic Modeling: Boltzmann Machines versus Born Machines''}
+\textbf{Referencia.} S.~Cheng, J.~Chen, L.~Wang, \textit{Entropy} \textbf{20}(8), 583 (2018). \cite{cheng2018}
+
+\textbf{Línea de investigación.} L6.
+
+\textbf{Resumen.} Compara, desde la teoría de la información, dos familias de modelos generativos con la misma forma funcional log-lineal pero ``moneda'' distinta: las máquinas de Boltzmann (probabilidad como exponencial de una energía, mundo clásico) y las Born machines (probabilidad como módulo al cuadrado de una amplitud cuántica). Muestra que las Born machines pueden representar ciertas distribuciones de forma más compacta gracias al entrelazamiento, acotando esa ventaja con la entropía de Rényi.
+
+\textbf{Conexión con los 4 ejes.} Eje 1 (generaliza la distribución de Boltzmann a ``distribuciones de Born''); eje 3 (la normalización de la amplitud cuántica juega el papel de $Z$).
+
+\subsection{Puškarov \& Cortés Cubero (2018) --- ``Machine learning algorithms based on generalized Gibbs ensembles''}
+\textbf{Referencia.} T.~Puškarov, A.~Cortés Cubero, arXiv:1804.03546 (2018). \cite{puskarov2018}
+
+\textbf{Línea de investigación.} L6 (con fuerte vínculo a L1).
+
+\textbf{Resumen.} Propone entrenar máquinas de Boltzmann cuánticas usando, en lugar de un único ensemble canónico, un Ensemble de Gibbs Generalizado con una temperatura efectiva distinta para cada cantidad conservada del sistema cuántico subyacente, lo que hace tratable --- en sistemas con suficiente estructura de integrabilidad --- un problema de entrenamiento que de otro modo sería intratable.
+
+\textbf{Conexión con los 4 ejes.} Eje 1 (Boltzmann generalizada) y eje 4 (ensembles generalizados como lenguaje de inferencia, llevado explícitamente al dominio cuántico).
+
+\subsection{Mazzanti \& Romero (2020) --- ``Efficient Evaluation of the Partition Function of RBMs with Annealed Importance Sampling''}
+\textbf{Referencia.} F.~Mazzanti, E.~Romero, arXiv:2007.11926 (2020). \cite{mazzanti2020}
+
+\textbf{Línea de investigación.} L3.
+
+\textbf{Resumen.} Aborda la estimación de $Z$ en RBMs mediante \emph{Annealed Importance Sampling}, mostrando que elegir mejor la distribución inicial de la cadena de recocido (en lugar de la uniforme estándar) reduce drásticamente la varianza del estimador y el número de pasos de Monte Carlo necesarios, sin sacrificar la insesgadez del estimador.
+
+\textbf{Conexión con los 4 ejes.} Eje 3 de forma directa; junto con Merhav (2026), es el artículo metodológico de referencia de la carpeta sobre estimación práctica de $Z$.
+
+\subsection{Merhav (2026) --- ``Grouped Reverse Importance Sampling for the Partition Function''}
+\textbf{Referencia.} N.~Merhav, arXiv:2606.26748v1, Technion (25 de junio de 2026). \cite{merhav2026}
+
+\textbf{Línea de investigación.} L3.
+
+\textbf{Resumen.} Introduce el muestreo de importancia inversa agrupado (GRIS), un esquema --- de apenas días de antigüedad respecto a la fecha de este documento --- que agrupa configuraciones de forma adaptativa para reducir la varianza del estimador de $Z$ frente a esquemas de importancia inversa estándar.
+
+\textbf{Conexión con los 4 ejes.} Eje 3; representa el estado del arte más reciente posible en este eje al momento de escribir este documento.
+
+\subsection{Dawid \& LeCun (2023/2024) --- ``Introduction to Latent Variable Energy-Based Models''}
+\textbf{Referencia.} A.~Dawid, Y.~LeCun, arXiv:2306.02572 (2023); versión revisada en \textit{J. Stat. Mech.} \textbf{2024}, 104011, DOI: 10.1088/1742-5468/ad292b. \cite{dawid2024}
+
+\textbf{Línea de investigación.} L2.
+
+\textbf{Resumen.} Notas de clase que presentan sistemáticamente los modelos basados en energía con variables latentes, mostrando cómo engloban autoencoders, modelos generativos y arquitecturas predictivas, y proponen las arquitecturas JEPA (\emph{Joint Embedding Predictive Architecture}) como camino hacia sistemas de IA con representaciones del mundo aprendidas de forma autosupervisada, evitando el colapso de representación mediante regularización en lugar del papel normalizador de $Z$.
+
+\textbf{Conexión con los 4 ejes.} Ejes 2 y 3 (cómo evitar $Z$ mediante regularización en vez de muestreo); conecta el legado histórico (Hopfield-Hinton) con la investigación de frontera actual.
+
+\subsection{Carbone (2025) --- ``A Hitchhiker's Guide...''}
+\textbf{Referencia.} D.~Carbone, arXiv:2406.13661v2 (2025), \textit{Transactions on Machine Learning Research}, mayo de 2025. \cite{carbone2025}
+
+\textbf{Línea de investigación.} L4 (con vínculos fuertes a L2).
+
+\textbf{Resumen.} Revisión exhaustiva que sitúa a los EBMs en el mapa más amplio de los modelos generativos (GANs, VAEs, flujos de normalización, modelos de difusión) y, sobre todo, en el de la física estadística de no equilibrio: discute muestreo MCMC, dinámica de Langevin y teoremas de fluctuación, tanto en el entrenamiento como en la generación de muestras.
+
+\textbf{Conexión con los 4 ejes.} Los cuatro ejes aparecen explícitamente como hilo conductor de la revisión; es probablemente el documento de la carpeta que más utiliza ``distribución de Boltzmann'', ``función de partición'' y ``ensemble'' como vocabulario compartido entre física y aprendizaje automático.
+
+\subsection{Hohm (2026) --- ``Lecture Notes on Statistical Physics and Neural Networks''}
+\textbf{Referencia.} O.~Hohm, arXiv:2605.06394v1, Humboldt University Berlin (mayo de 2026). \cite{hohm2026}
+
+\textbf{Línea de investigación.} L5.
+
+\textbf{Resumen.} Notas de clase recientes que construyen, con rigor de curso de posgrado de física, el puente entre el modelo de Ising, el grupo de renormalización y las redes neuronales modernas, incluyendo una discusión de cómo el aprendizaje profundo puede entenderse como un flujo de renormalización que integra grados de libertad irrelevantes capa a capa.
+
+\textbf{Conexión con los 4 ejes.} Eje 2 (modelos basados en energía vistos desde el grupo de renormalización); puente natural hacia la línea L5 y hacia Peraza Coppola, Helias \& Ringel (2025).
+
+\section{Papers adicionales recientes (no en mi carpeta)}
+
+\subsection{L2 --- Máquinas de Boltzmann y EBMs modernos / JEPA}
+
+\noindent M.~Assran, A.~Bardes \emph{et al.}, ``V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning'', arXiv:2506.09985 (2025). \cite{assran2025}
+Preentrena una arquitectura predictiva de variable latente (JEPA, sin contraste explícito ni reconstrucción de píxeles) sobre más de un millón de horas de video, logrando comprensión de movimiento de vanguardia y, tras un post-entrenamiento condicionado a la acción con menos de 62 horas de video de robot, planificación \emph{zero-shot} en brazos robóticos reales. Es la prueba más reciente y a mayor escala de que el programa EBM/JEPA --- heredero directo, en espíritu, de la Máquina de Boltzmann --- escala a problemas de inteligencia física del mundo real.
+
+\subsection{L4 --- Termodinámica de modelos de difusión generativa}
+
+\noindent G.~Biroli, T.~Bonnaire, V.~de Bortoli, M.~Mézard, ``Dynamical regimes of diffusion models'', \textit{Nature Communications} \textbf{15}, 9957 (2024); arXiv:2402.18491. \cite{biroli2024}
+Identifica dos transiciones dinámicas en el proceso generativo inverso de un modelo de difusión: una transición de ``especiación'' (ruptura de simetría, emergencia de estructura gruesa) y una transición de ``colapso'' (de tipo vítreo, condensación hacia un dato memorizado), con tiempos críticos calculables a partir del espectro de la matriz de correlación y de la entropía en exceso de los datos.
+
+\noindent L.~Ambrogioni, ``The Statistical Thermodynamics of Generative Diffusion Models: Phase Transitions, Symmetry Breaking, and Critical Instability'', \textit{Entropy} \textbf{27}(3), 291 (2025); DOI: 10.3390/e27030291. \cite{ambrogioni2025}
+Formaliza el comportamiento del muestreo por difusión en el lenguaje pleno de la termodinámica estadística de equilibrio: transición de fase, ruptura de simetría e inestabilidad crítica, proporcionando un marco analítico para las transiciones observadas empíricamente por Biroli et al.
+
+\subsection{L5 --- Paisajes de energía, vidrios de espín y sobreajuste}
+
+\noindent H.~Liao, W.~Zhang, Z.~Huang, Z.~Long, M.~Zhou, X.~Wu, R.~Mao, C.~H.~Yeung, ``Exploring Loss Landscapes through the Lens of Spin Glass Theory'', arXiv:2407.20724 (2024). \cite{liao2024}
+Mapea explícitamente el paisaje de pérdida de redes neuronales a un hamiltoniano de vidrio de espín y caracteriza su estructura de mínimos usando herramientas estándar de física de sistemas desordenados.
+
+\noindent M.~Winer, B.~Hanin, ``Deep Neural Nets as Hamiltonians'', arXiv:2503.23982 (2025). \cite{winer2025}
+Trata un perceptrón multicapa de inicialización aleatoria como un hamiltoniano sobre sus entradas y usa el método de réplicas para calcular, de forma exacta, la entropía (volumen de configuraciones) a una energía dada cerca de los mínimos casi globales, en el límite de ancho infinito.
+
+\noindent S.~Ariosto, ``Statistical Physics of Deep Neural Networks: Generalization Capability, Beyond the Infinite Width, and Feature Learning'', arXiv:2501.19281 (2025). \cite{ariosto2025}
+Deriva una cota asintótica de generalización que depende únicamente del tamaño de la última capa (no del número total de parámetros), usando una función de partición aproximada para arquitecturas profundas más allá del límite de ancho infinito.
+
+\noindent G.~Catania, A.~Decelle, C.~Furtlehner, B.~Seoane, ``A Theoretical Framework for Overfitting in Energy-based Modeling'', \textit{Proceedings of ICML 2025} (PMLR); arXiv:2501.19158. \cite{catania2025}
+Desarrolla, vía teoría de matrices aleatorias asintótica, un marco que predice el punto óptimo de \emph{early stopping} en modelos basados en energía entrenados con datos finitos --- el análogo, para EBMs, de la validación cruzada generalizada.
+
+\noindent A.~B.~Boyd, J.~P.~Crutchfield, M.~Gu, F.~C.~Binder, ``Thermodynamic overfitting and generalization: energetics of predictive intelligence'', \textit{New J. Phys.} \textbf{27} (2025), DOI: 10.1088/1367-2630/addf71; arXiv:2402.16995. \cite{boyd2025}
+Muestra, usando termodinámica estocástica, que tanto el sobreajuste como la regularización tienen una contraparte física: un motor que extrae trabajo de datos sufre una disipación de energía divergente exactamente cuando el modelo sobreajusta --- el ``sobreajuste termodinámico''.
+
+\noindent G.~Peraza Coppola, M.~Helias, Z.~Ringel, ``Renormalization group for deep neural networks: Universality of learning and scaling laws'', arXiv:2510.25553 (2025). \cite{peraza2025}
+Desarrolla un marco de grupo de renormalización para analizar la autosimilitud (y su ruptura) en las curvas de aprendizaje de redes no lineales entrenadas sobre datos con distribución de ley de potencias, explicando la universalidad observada empíricamente en las leyes de escala del aprendizaje profundo.
+
+\subsection{L6 --- Frontera cuántica-clásica}
+
+\noindent O.~Huijgen, L.~Coopmans, P.~Najafi, M.~Benedetti, H.~J.~Kappen, ``Training Quantum Boltzmann Machines with the $\beta$-Variational Quantum Eigensolver'', \textit{Mach. Learn.: Sci. Technol.} \textbf{5}(2), 025017 (2024); arXiv:2304.08631. \cite{huijgen2024}
+Introduce un esquema de bucle anidado --- un $\beta$-VQE interno que aproxima los valores esperados de la QBM y un bucle externo que minimiza la entropía relativa al estado objetivo --- que permite entrenar máquinas de Boltzmann cuánticas en hardware NISQ real usando representaciones de bajo rango, eficaces tanto para datos clásicos como para tomografía cuántica a baja temperatura.
+
+\section{Síntesis}
+
+Las seis líneas anteriores no son compartimentos estancos: comparten un mismo núcleo conceptual, el de los ejes de este proyecto, y se diferencian sobre todo en \emph{qué parte} del aparato de Jaynes-Boltzmann-Gibbs cada una empuja más lejos. L1 y L6 empujan la noción de ensemble más allá del caso canónico simple (hacia múltiples temperaturas efectivas y hacia amplitudes cuánticas); L2 empuja la noción de modelo basado en energía desde la memoria asociativa de 1982 hasta arquitecturas predictivas de mundo entrenadas con millones de horas de video; L3 ataca de frente el problema computacional que ya preocupaba a Hinton en 1985 --- evaluar o evitar $Z$ --- con herramientas de muestreo cada vez más finas, hasta esquemas publicados con días de antigüedad; L4 y L5 son, en cierto sentido, las más nuevas y las más prometedoras: tratan el propio \emph{proceso de aprender o generar} como un sistema termodinámico de pleno derecho, con sus transiciones de fase, su entropía y su disipación, en lugar de limitarse a usar el lenguaje de la energía como una metáfora de diseño. Si hay una dirección común hacia la que parecen converger todas estas líneas, es esta: cada vez con más frecuencia, los fenómenos de interés en aprendizaje automático moderno (memorización, sobreajuste, escalado, emergencia de capacidades) se tratan no como curiosidades empíricas a documentar, sino como predicciones de una teoría física --- con sus propias transiciones de fase, sus propios exponentes críticos y su propia termodinámica --- que está, en 2026, todavía en plena construcción.
+
+\begin{thebibliography}{99}
+
+\bibitem{jaynesI}
+E.~T.~Jaynes, ``Information theory and statistical mechanics'', \textit{Phys. Rev.} \textbf{106}(4), 620--630 (1957).
+
+\bibitem{jaynesII}
+E.~T.~Jaynes, ``Information theory and statistical mechanics II'', \textit{Phys. Rev.} \textbf{108}(2), 171--190 (1957).
+
+\bibitem{ackley1985estado}
+D.~H.~Ackley, G.~E.~Hinton, T.~J.~Sejnowski, ``A learning algorithm for Boltzmann machines'', \textit{Cognitive Science} \textbf{9}(1), 147--169 (1985).
+
+\bibitem{lecun2006estado}
+Y.~LeCun, S.~Chopra, R.~Hadsell, M.~Ranzato, F.~J.~Huang, ``A tutorial on energy-based learning'', NYU/Courant Institute, version 1.0 (2006).
+
+\bibitem{cheng2018}
+S.~Cheng, J.~Chen, L.~Wang, ``Information perspective to probabilistic modeling: Boltzmann machines versus Born machines'', \textit{Entropy} \textbf{20}(8), 583 (2018).
+
+\bibitem{puskarov2018}
+T.~Puškarov, A.~Cortés Cubero, ``Machine learning algorithms based on generalized Gibbs ensembles'', arXiv:1804.03546 (2018).
+
+\bibitem{mazzanti2020}
+F.~Mazzanti, E.~Romero, ``Efficient evaluation of the partition function of restricted Boltzmann machines with annealed importance sampling'', arXiv:2007.11926 (2020).
+
+\bibitem{merhav2026}
+N.~Merhav, ``Grouped reverse importance sampling for the partition function'', arXiv:2606.26748v1, Technion (2026).
+
+\bibitem{dawid2024}
+A.~Dawid, Y.~LeCun, ``Introduction to latent variable energy-based models: a path towards autonomous machine intelligence'', arXiv:2306.02572 (2023); \textit{J. Stat. Mech.} \textbf{2024}, 104011, DOI: 10.1088/1742-5468/ad292b.
+
+\bibitem{carbone2025}
+D.~Carbone, ``A hitchhiker's guide on the relation of energy-based models with other generative models, sampling and statistical physics: a comprehensive review'', arXiv:2406.13661v2 (2025), \textit{Transactions on Machine Learning Research}.
+
+\bibitem{hohm2026}
+O.~Hohm, ``Lecture notes on statistical physics and neural networks'', arXiv:2605.06394v1, Humboldt University Berlin (2026).
+
+\bibitem{assran2025}
+M.~Assran, A.~Bardes \emph{et al.}, ``V-JEPA 2: Self-supervised video models enable understanding, prediction and planning'', arXiv:2506.09985 (2025).
+
+\bibitem{biroli2024}
+G.~Biroli, T.~Bonnaire, V.~de Bortoli, M.~Mézard, ``Dynamical regimes of diffusion models'', \textit{Nature Communications} \textbf{15}, 9957 (2024); arXiv:2402.18491.
+
+\bibitem{ambrogioni2025}
+L.~Ambrogioni, ``The statistical thermodynamics of generative diffusion models: phase transitions, symmetry breaking, and critical instability'', \textit{Entropy} \textbf{27}(3), 291 (2025), DOI: 10.3390/e27030291.
+
+\bibitem{liao2024}
+H.~Liao, W.~Zhang, Z.~Huang, Z.~Long, M.~Zhou, X.~Wu, R.~Mao, C.~H.~Yeung, ``Exploring loss landscapes through the lens of spin glass theory'', arXiv:2407.20724 (2024).
+
+\bibitem{winer2025}
+M.~Winer, B.~Hanin, ``Deep neural nets as Hamiltonians'', arXiv:2503.23982 (2025).
+
+\bibitem{ariosto2025}
+S.~Ariosto, ``Statistical physics of deep neural networks: generalization capability, beyond the infinite width, and feature learning'', arXiv:2501.19281 (2025).
+
+\bibitem{catania2025}
+G.~Catania, A.~Decelle, C.~Furtlehner, B.~Seoane, ``A theoretical framework for overfitting in energy-based modeling'', \textit{Proceedings of the 42nd International Conference on Machine Learning (ICML 2025)}, PMLR; arXiv:2501.19158.
+
+\bibitem{boyd2025}
+A.~B.~Boyd, J.~P.~Crutchfield, M.~Gu, F.~C.~Binder, ``Thermodynamic overfitting and generalization: energetics of predictive intelligence'', \textit{New Journal of Physics} \textbf{27} (2025), DOI: 10.1088/1367-2630/addf71; arXiv:2402.16995.
+
+\bibitem{peraza2025}
+G.~Peraza Coppola, M.~Helias, Z.~Ringel, ``Renormalization group for deep neural networks: universality of learning and scaling laws'', arXiv:2510.25553 (2025).
+
+\bibitem{huijgen2024}
+O.~Huijgen, L.~Coopmans, P.~Najafi, M.~Benedetti, H.~J.~Kappen, ``Training quantum Boltzmann machines with the $\beta$-variational quantum eigensolver'', \textit{Machine Learning: Science and Technology} \textbf{5}(2), 025017 (2024); arXiv:2304.08631.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,234 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, hyperref, geometry}
+\geometry{margin=2.5cm}
+
+\title{El Premio Nobel de Física 2024:\\ Máquinas de Boltzmann, Redes de Hopfield\\ y los Fundamentos Físicos del Aprendizaje Automático}
+\author{}
+\date{Junio de 2026}
+
+\begin{document}
+\maketitle
+
+\noindent Este documento desarrolla, con el nivel técnico de una nota de física, el contenido científico detrás del Premio Nobel de Física 2024, otorgado a John J. Hopfield y Geoffrey E. Hinton ``por descubrimientos y invenciones fundacionales que permiten el aprendizaje automático con redes neuronales artificiales''. El objetivo es mostrar, de forma explícita y con ecuaciones, cómo ese trabajo es indisociable de los cuatro ejes temáticos de este proyecto: la distribución de Boltzmann, los pesos probabilísticos en modelos basados en energía, la función de partición y los ensembles como lenguaje de inferencia.
+
+\section{Contexto y motivación del premio}
+
+\subsection{¿Por qué un premio de Física por trabajo de inteligencia artificial?}
+
+A primera vista, premiar con el Nobel de Física dos algoritmos de redes neuronales puede parecer una anomalía. La justificación del Comité Nobel, sin embargo, es estrictamente física: tanto Hopfield como Hinton no construyeron sus modelos por ensayo y error de ingeniería, sino traduciendo al lenguaje del aprendizaje un aparato conceptual que pertenece de pleno derecho a la física estadística --- el de los sistemas de muchos cuerpos con interacciones locales, equilibrio térmico y comportamiento colectivo emergente. La red de Hopfield es, matemáticamente, un modelo de Ising con desorden congelado en los acoplamientos; la Máquina de Boltzmann es, literalmente, un sistema en equilibrio térmico cuya distribución de probabilidad sobre configuraciones es la distribución de Boltzmann. El Comité Nobel subrayó precisamente esto: ambos descubrimientos usan herramientas y conceptos de la física estadística (energía, temperatura, dinámica estocástica, funciones de partición) para resolver un problema que, en su origen, no era un problema de física --- cómo almacenar y reconocer patrones, cómo aprender una distribución de probabilidad a partir de ejemplos --- y que terminó dando lugar a la revolución del aprendizaje profundo. En palabras del comunicado oficial, los laureados ``usaron herramientas de la física para desarrollar métodos que son la base del poderoso aprendizaje automático actual''.
+
+Este es, además, un caso paradigmático de cómo un formalismo --- el de los ensembles estadísticos y la maximización de entropía de Jaynes --- migra de un dominio (la termodinámica de sistemas físicos) a otro completamente distinto (el aprendizaje de representaciones y la inferencia probabilística), conservando intacta su estructura matemática. Ese es exactamente el tipo de migración conceptual que este proyecto se propone documentar.
+
+\subsection{Perfiles biográficos: dos caminos hacia la física estadística del aprendizaje}
+
+\textbf{John J. Hopfield} (n. 1933, Chicago) tiene una formación de físico convencional: licenciatura en Swarthmore College (1954) y doctorado en física en Cornell University (1958), bajo la dirección de Albert Overhauser, con una tesis sobre excitones y polaritones en sólidos (de hecho, Hopfield acuñó el término ``polaritón''). Tras pasar por los Laboratorios Bell, Berkeley y Princeton, su carrera se caracteriza por una notable itinerancia temática: física del estado sólido, biofísica molecular (es coautor, junto con Jacques Ninio, de la teoría del \emph{kinetic proofreading} en la síntesis de proteínas, 1974) y, a partir de los años setenta, neurociencia teórica. Su artículo de 1982 sobre redes neuronales surge de esta trayectoria de físico que aplica herramientas de sistemas de muchos cuerpos a problemas biológicos: Hopfield buscaba explicar cómo una red de neuronas, cada una con una dinámica simple, puede dar lugar a un comportamiento colectivo --- la memoria asociativa --- de forma análoga a cómo espines individuales simples dan lugar a fenómenos colectivos como el magnetismo.
+
+\textbf{Geoffrey E. Hinton} (n. 1947, Londres) tiene una formación distinta: licenciatura en psicología experimental en Cambridge (1970) y doctorado en inteligencia artificial en la Universidad de Edimburgo (1978), bajo la dirección de Christopher Longuet-Higgins. Hinton no es físico de formación, pero su contribución central --- la Máquina de Boltzmann, desarrollada junto con Terrence Sejnowski y David Ackley a comienzos de los años ochenta --- consiste precisamente en \emph{importar} de manera deliberada y explícita el aparato formal de la mecánica estadística (temperatura, distribución de Boltzmann, función de partición) para resolver el problema de aprendizaje que la red de Hopfield, en su versión determinista, no podía resolver de forma satisfactoria: cómo entrenar los pesos de una red para que represente una distribución de probabilidad arbitraria, y no solo para que recuerde un conjunto fijo de patrones grabados a mano. Tras puestos en Sussex, UC San Diego (donde participó del grupo de \emph{Parallel Distributed Processing} de Rumelhart y McClelland) y Carnegie Mellon, Hinton se trasladó a la Universidad de Toronto en 1987, donde construyó la escuela que sentaría las bases del aprendizaje profundo moderno.
+
+\section{El descubrimiento de Hopfield (1982)}
+
+\subsection{La red de Hopfield: arquitectura y dinámica}
+
+El modelo introducido por Hopfield en 1982 (\cite{hopfield1982}) consiste en una red de $N$ unidades binarias $s_i \in \{0,1\}$ (o, en la convención de espín, $s_i \in \{-1,+1\}$), totalmente conectadas entre sí mediante pesos simétricos $w_{ij}=w_{ji}$, sin autoconexión ($w_{ii}=0$). Cada unidad recibe una entrada neta de las demás,
+\begin{equation}
+h_i = \sum_{j\neq i} w_{ij}\, s_j ,
+\end{equation}
+y actualiza su propio estado de forma asíncrona (una unidad a la vez, elegida al azar) mediante una regla de umbral determinista:
+\begin{equation}
+s_i \;\longrightarrow\; \begin{cases} 1 & \text{si } h_i > \theta_i \\ 0 & \text{si } h_i \leq \theta_i \end{cases}
+\end{equation}
+donde $\theta_i$ es un umbral fijo (a menudo cero). Los patrones que se desean memorizar, $\{\xi^\mu_i\}_{\mu=1,\dots,P}$, se grafican en los pesos mediante una regla de tipo hebbiano:
+\begin{equation}
+w_{ij} = \frac{1}{N}\sum_{\mu=1}^{P} \xi_i^\mu \xi_j^\mu .
+\end{equation}
+Esta es la primera idea central del trabajo de Hopfield: la memoria no se almacena en una dirección concreta de la red (como en una memoria de acceso aleatorio convencional), sino de forma distribuida en el patrón completo de pesos sinápticos, exactamente como la información sobre la fase de un material magnético no está localizada en un solo espín sino codificada colectivamente en todas las interacciones de canje.
+
+\subsection{Origen en la física de sistemas de espín: el modelo de Ising}
+
+La red de Hopfield es, en sentido estricto, un modelo de Ising con interacciones de largo alcance y desorden congelado (\emph{quenched disorder}) en los acoplamientos. La correspondencia es directa:
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Modelo de Ising} & \textbf{Red de Hopfield} \\
+\hline
+Espines $\sigma_i = \pm 1$ & Neuronas binarias $s_i$ \\
+Acoplamientos de canje $J_{ij}$ & Pesos sinápticos $w_{ij}$ \\
+Campo magnético externo $h_i$ & Umbral / sesgo $\theta_i$ \\
+Dinámica de Glauber / Metropolis & Actualización asíncrona por umbral \\
+Mínimos de energía (estados fundamentales) & Patrones memorizados (atractores) \\
+Vidrio de espín (desorden + frustración) & Memoria asociativa con $P$ patrones \\
+\end{tabular}
+\end{center}
+
+Esta analogía no es una mera metáfora pedagógica: Hopfield la utiliza de forma operativa, y poco después Daniel Amit, Hanoch Gutfreund y Haim Sompolinsky (\cite{amit1985}) demostraron, usando el método de réplicas --- la herramienta estándar de la teoría de vidrios de espín --- que una red de Hopfield puede almacenar de forma fiable hasta $P_{\max} \approx 0.138\,N$ patrones aleatorios antes de que el recuerdo se vuelva no confiable; más allá de ese umbral, la red entra en un régimen análogo a una fase de vidrio de espín, con mínimos de energía espurios que no corresponden a ningún patrón almacenado. Este resultado --- obtenido con maquinaria de física estadística de sistemas desordenados --- es uno de los puentes técnicos más explícitos entre la teoría de vidrios de espín y la teoría del aprendizaje.
+
+\subsection{La función de energía: por qué la red converge}
+
+La segunda idea central de Hopfield, y la que hace que el modelo sea analizable, es la existencia de una función de energía
+\begin{equation}
+E(s) = -\frac{1}{2}\sum_{i\neq j} w_{ij}\, s_i s_j = -\sum_{i<j} w_{ij}\, s_i s_j ,
+\label{eq:hopfield-energy}
+\end{equation}
+formalmente idéntica al hamiltoniano de Ising sin campo externo. Como los pesos son simétricos, puede demostrarse que la dinámica asíncrona de actualización por umbral nunca incrementa $E(s)$: cada actualización de una unidad o bien deja $E$ igual o bien la disminuye estrictamente. $E(s)$ actúa, en lenguaje de sistemas dinámicos, como una función de Lyapunov, y en lenguaje de física estadística, como el hamiltoniano cuyo mínimo (local) determina el estado final de la red. La consecuencia es que la dinámica de la red siempre converge a un mínimo local de $E$ --- un atractor --- y los patrones almacenados $\xi^\mu$ son, por construcción de la regla hebbiana, mínimos (aproximados) de esta superficie de energía. Presentar a la red una versión incompleta o ruidosa de un patrón equivale a partir de un punto cercano a ese mínimo en el espacio de configuraciones; la dinámica de descenso en energía conduce entonces a la red, de manera determinista, al atractor correcto: esto es la memoria asociativa y la recuperación de patrones por contenido, no por dirección. La imagen de un ``paisaje de energía'' con valles (patrones memorizados), barreras (separación entre cuencas de atracción) y mínimos espurios --- el mismo lenguaje que se usa para describir vidrios de espín o, más tarde, paisajes de pérdida de redes profundas --- nace aquí de forma explícita.
+
+\section{El descubrimiento de Hinton (1983-1985)}
+
+\subsection{De la red de Hopfield a la Máquina de Boltzmann}
+
+Junto con David Ackley y Terrence Sejnowski, Hinton presentó en 1983 (\cite{fahlman1983}) y desarrolló en detalle en 1985 (\cite{ackley1985}) la Máquina de Boltzmann, un modelo que extiende la red de Hopfield en dos direcciones simultáneas:
+
+\begin{enumerate}
+\item \textbf{De dinámica determinista a dinámica estocástica.} En lugar de la regla de umbral determinista de Hopfield, cada unidad se actualiza probabilísticamente: la probabilidad de que la unidad $i$ tome el valor $1$ depende de su entrada neta $h_i = \sum_j w_{ij}s_j + \theta_i$ y de un parámetro de temperatura $T$ a través de una función logística,
+\begin{equation}
+P(s_i = 1 \mid \mathbf{s}_{-i}) = \sigma\!\left(\frac{h_i}{T}\right) = \frac{1}{1+e^{-h_i/T}} .
+\end{equation}
+Cuando $T \to 0$ esta regla se reduce exactamente a la regla de umbral determinista de Hopfield; para $T>0$ la red puede, con cierta probabilidad, ``subir'' en energía y escapar de mínimos locales poco profundos --- el equivalente neuronal del \emph{simulated annealing}.
+\item \textbf{De unidades visibles a unidades visibles y ocultas.} La Máquina de Boltzmann introduce unidades ocultas $h$ además de las unidades visibles $v$ que representan los datos. Esto transforma el modelo de una memoria asociativa de patrones fijos en un \emph{modelo generativo}: una distribución de probabilidad $P(v)$ sobre el espacio de datos, marginalizando las unidades ocultas, que puede ajustarse para aproximar cualquier distribución empírica de entrenamiento.
+\end{enumerate}
+
+\subsection{Por qué se necesitaron herramientas de mecánica estadística}
+
+Ninguna de estas dos extensiones es posible sin importar, de manera literal, el aparato formal de la física estadística de equilibrio. La razón es la siguiente: una vez que la dinámica de actualización es estocástica y los pesos son simétricos, puede demostrarse que la distribución de probabilidad estacionaria sobre configuraciones globales $s=(v,h)$ es exactamente la distribución de Boltzmann,
+\begin{equation}
+P(s) = \frac{1}{Z}\, e^{-E(s)/T}, \qquad Z = \sum_{s} e^{-E(s)/T},
+\end{equation}
+con la misma función de energía de tipo Ising que en la ecuación~\eqref{eq:hopfield-energy} (más un término de sesgo). Esto no es una elección de diseño: es una consecuencia matemática necesaria de que la dinámica de Hinton, Sejnowski y Ackley satisface balance detallado respecto de esa distribución, igual que ocurre con la dinámica de Glauber o Metropolis en un sistema de espines en contacto con un baño térmico. Para poder \emph{entrenar} esta red --- ajustar los pesos $w_{ij}$ para que $P(v)$ se aproxime a la distribución empírica de los datos --- Hinton necesitó entonces el resto del aparato de la mecánica estadística: el concepto de temperatura como parámetro de control de la exploración del espacio de configuraciones, la noción de equilibrio térmico como punto de llegada de la dinámica estocástica, y, sobre todo, la función de partición $Z$ como objeto normalizador cuyo logaritmo conecta la distribución de probabilidad con una energía libre. La regla de aprendizaje que obtuvieron, basada en el gradiente de la log-verosimilitud, se expresa de forma extraordinariamente simple en este lenguaje:
+\begin{equation}
+\Delta w_{ij} \;\propto\; \langle s_i s_j \rangle_{\text{datos}} - \langle s_i s_j \rangle_{\text{modelo}} ,
+\label{eq:cd-rule}
+\end{equation}
+es decir, la diferencia entre dos promedios térmicos (dos \emph{ensembles}): uno con las unidades visibles fijadas (\emph{clamped}) a los datos de entrenamiento, y otro con la red evolucionando libremente en equilibrio térmico. Sin el concepto de ensemble estadístico y de promedio térmico, esta regla de aprendizaje --- la pieza central del descubrimiento de Hinton --- no tendría ni sentido ni demostración.
+
+\section{Conexión técnica explícita con los cuatro ejes del proyecto}
+
+\subsection{Eje 1: Distribución de Boltzmann}
+
+La conexión aquí es directa y no metafórica: la distribución estacionaria de la Máquina de Boltzmann \emph{es}, por construcción y por demostración matemática, la distribución de Boltzmann de la mecánica estadística de equilibrio,
+\begin{equation}
+P(s) = \frac{1}{Z}\, e^{-E(s)/T}.
+\end{equation}
+El parámetro $T$ desempeña en el modelo exactamente el mismo papel que la temperatura en un sistema físico: a $T$ alta, la distribución es casi uniforme sobre todas las configuraciones (alta entropía, exploración); a $T$ baja, la distribución se concentra en los mínimos de energía (baja entropía, explotación). El protocolo de entrenamiento original de Ackley, Hinton y Sejnowski usa explícitamente un esquema de \emph{annealing} --- enfriamiento gradual de $T$ --- durante la fase de equilibrado de la red, técnica tomada directamente de los métodos de Monte Carlo para sistemas de espín en equilibrio térmico (Metropolis, Glauber). En el límite $T\to 0$, la distribución de Boltzmann colapsa sobre los mínimos globales de $E(s)$, recuperando la dinámica determinista de la red de Hopfield: la red de Hopfield es, literalmente, el límite de temperatura cero de la Máquina de Boltzmann.
+
+\subsection{Eje 2: Pesos probabilísticos y modelos basados en energía}
+
+Tanto la red de Hopfield como la Máquina de Boltzmann son, en la terminología moderna, modelos basados en energía (\emph{Energy-Based Models}, EBM): la probabilidad de una configuración no se modela directamente, sino a través de una función de energía parametrizada por los pesos,
+\begin{equation}
+E_w(s) = -\sum_{i<j} w_{ij}\, s_i s_j - \sum_i \theta_i s_i ,
+\qquad
+p_w(s) = \frac{e^{-E_w(s)/T}}{Z(w)} .
+\end{equation}
+Los pesos $w_{ij}$ cumplen un doble papel, idéntico al de los acoplamientos de canje $J_{ij}$ en un sistema de espines: por un lado son parámetros físicos que determinan la energía de cada configuración; por otro lado son los parámetros entrenables del modelo. La regla de aprendizaje de la ecuación~\eqref{eq:cd-rule} muestra que cada peso se ajusta de forma local, en función únicamente de las correlaciones entre las dos unidades que conecta --- otra vez en directa analogía con cómo, en física estadística inversa, se infieren los acoplamientos de un modelo de Ising a partir de las correlaciones observadas en datos experimentales. Este es precisamente el problema de \emph{inferencia inversa de Ising}, y la regla de Hinton, Sejnowski y Ackley es uno de sus primeros algoritmos prácticos.
+
+\subsection{Eje 3: Función de partición $Z$}
+
+La función de partición,
+\begin{equation}
+Z(w,T) = \sum_{s} e^{-E_w(s)/T},
+\end{equation}
+es el objeto que hace que el entrenamiento de la Máquina de Boltzmann sea, en general, computacionalmente intratable: la suma recorre las $2^N$ configuraciones posibles de la red. Hinton, Sejnowski y Ackley resolvieron este problema --- aún antes de tener una palabra formal para él --- de la única manera estructuralmente posible: en lugar de calcular $Z$ explícitamente, lo eliminaron del problema. Tomando el gradiente del logaritmo de la verosimilitud respecto de un peso $w_{ij}$, el término asociado a $Z$ se convierte exactamente en un promedio térmico bajo la distribución del modelo,
+\begin{equation}
+\frac{\partial \ln Z}{\partial w_{ij}} = \langle s_i s_j\rangle_{\text{modelo}},
+\end{equation}
+de modo que la regla de aprendizaje de la ecuación~\eqref{eq:cd-rule} nunca requiere evaluar $Z$, sino solo \emph{muestrear} de la distribución del modelo mediante la propia dinámica estocástica de la red (cadenas de Markov en equilibrio). Esta estrategia --- sustituir el cálculo exacto de $Z$ por muestreo de Monte Carlo de la distribución que $Z$ normaliza --- es el ancestro directo de todos los métodos modernos de entrenamiento de modelos basados en energía, incluida la divergencia contrastiva (Hinton, 2002) y los métodos de muestreo de importancia recocida (\emph{Annealed Importance Sampling}) que se usan hoy para estimar $Z$ en Máquinas de Boltzmann Restringidas.
+
+\subsection{Eje 4: Ensembles como lenguaje de inferencia}
+
+La regla de aprendizaje de la ecuación~\eqref{eq:cd-rule} es, de hecho, la formulación más limpia posible de la idea de que aprender es comparar ensembles. La ``fase positiva'' $\langle s_i s_j\rangle_{\text{datos}}$ es el promedio de correlaciones calculado sobre un ensemble en el que las unidades visibles están fijadas a los datos observados (un ensemble \emph{condicionado} o \emph{clamped}); la ``fase negativa'' $\langle s_i s_j\rangle_{\text{modelo}}$ es el promedio sobre el ensemble canónico libre de la red, en equilibrio térmico a temperatura $T$ y sin restricciones. El aprendizaje consiste, exactamente, en hacer que estos dos ensembles --- el de los datos y el de las predicciones del modelo --- coincidan en sus estadísticas de segundo orden. Puede demostrarse que esta regla de actualización realiza un descenso de gradiente sobre la divergencia de Kullback-Leibler entre la distribución empírica de los datos y la distribución de Boltzmann del modelo,
+\begin{equation}
+D_{\mathrm{KL}}\!\left(P_{\text{datos}}(v) \,\big\|\, P_w(v)\right),
+\end{equation}
+lo cual es, en esencia, una instancia del principio de máxima entropía de Jaynes: entre todas las distribuciones de Boltzmann compatibles con las correlaciones observadas en los datos, el algoritmo selecciona aquella que además maximiza la entropía (minimiza la información añadida) sujeta a esas restricciones. La Máquina de Boltzmann es, en este sentido preciso, un algoritmo de inferencia de ensembles aplicado al aprendizaje de representaciones: convierte el problema de ``aprender una distribución de probabilidad a partir de ejemplos'' en el problema, ya resuelto por la física estadística, de ``encontrar el ensemble canónico compatible con unas observaciones dadas''.
+
+\section{Legado e impacto en la inteligencia artificial moderna}
+
+El descubrimiento de Hinton resolvía un problema de aprendizaje, pero a un costo computacional severo: equilibrar una Máquina de Boltzmann completamente conectada requiere, en general, un tiempo exponencial. La historia del aprendizaje profundo de las cuatro décadas siguientes puede leerse, en gran medida, como una sucesión de aproximaciones cada vez más eficientes a la misma regla de aprendizaje basada en ensembles de la ecuación~\eqref{eq:cd-rule}:
+
+\begin{itemize}
+\item Paul Smolensky (1986) propuso restringir la conectividad eliminando las conexiones dentro de cada capa --- la Máquina de Boltzmann Restringida (RBM) --- lo que hace que la inferencia condicional $P(h\mid v)$ y $P(v\mid h)$ se factorice exactamente, acelerando drásticamente el muestreo.
+\item Hinton (2002, \cite{hinton2002}) introdujo la divergencia contrastiva (\emph{Contrastive Divergence}), que sustituye el muestreo hasta equilibrio de la fase negativa por unos pocos pasos de cadena de Markov, haciendo el entrenamiento de RBMs práctico a gran escala.
+\item Hinton, Osindero y Teh (2006, \cite{hinton2006dbn}) mostraron que apilar RBMs entrenadas capa por capa --- las \emph{Deep Belief Networks} --- permite preentrenar redes profundas de muchas capas, superando el problema de optimización que hasta entonces hacía impracticable entrenar redes con más de dos o tres capas ocultas.
+\item Hinton y Salakhutdinov (2006, \cite{hinton2006science}) usaron este preentrenamiento basado en RBMs para construir autoencoders profundos capaces de reducción de dimensionalidad no lineal, uno de los resultados que catalizó el resurgimiento del aprendizaje profundo entre 2006 y 2012.
+\item El algoritmo de retropropagación, popularizado por Rumelhart, Hinton y Williams (1986, \cite{rumelhart1986}), se convirtió en el método de entrenamiento dominante de las redes neuronales modernas, incluidas las que ya no usan unidades estocásticas ni funciones de energía explícitas.
+\end{itemize}
+
+La huella de la física estadística, sin embargo, no desaparece en el aprendizaje profundo moderno: persiste en la función \emph{softmax}, que no es otra cosa que una distribución de Boltzmann sobre las salidas de una red con ``energías'' dadas por los logits y un parámetro de ``temperatura'' que controla la nitidez de la distribución (un recurso de uso diario en los modelos de lenguaje actuales); persiste en los modelos de difusión generativa, cuyo proceso de generación es una dinámica de Langevin --- la misma familia de dinámicas estocásticas de la Máquina de Boltzmann --- que recorre un paisaje de energía aprendido; y persiste en el renovado interés por las redes de Hopfield modernas (Krotov y Hopfield, 2016) y su relación demostrada con el mecanismo de atención de los transformers, que ha devuelto el lenguaje de paisajes de energía y memorias asociativas al centro de la investigación en IA. Los propios trabajos recopilados en este proyecto sobre modelos basados en energía y arquitecturas predictivas de variables latentes (JEPA) son, en este sentido, continuaciones directas y conscientes del programa que Hopfield y Hinton abrieron en 1982-1985: traducir el aparato formal de la física estadística de equilibrio al problema de construir sistemas que aprenden.
+
+\begin{thebibliography}{99}
+
+\bibitem{hopfield1982}
+J.~J.~Hopfield,
+``Neural networks and physical systems with emergent collective computational abilities'',
+\textit{Proc. Natl. Acad. Sci. USA} \textbf{79}, 2554--2558 (1982).
+
+\bibitem{hopfield1984}
+J.~J.~Hopfield,
+``Neurons with graded response have collective computational properties like those of two-state neurons'',
+\textit{Proc. Natl. Acad. Sci. USA} \textbf{81}, 3088--3092 (1984).
+
+\bibitem{fahlman1983}
+S.~E.~Fahlman, G.~E.~Hinton, T.~J.~Sejnowski,
+``Massively parallel architectures for AI: NETL, Thistle, and Boltzmann Machines'',
+in \textit{Proceedings of the National Conference on Artificial Intelligence (AAAI-83)}, pp.~109--113 (1983).
+
+\bibitem{ackley1985}
+D.~H.~Ackley, G.~E.~Hinton, T.~J.~Sejnowski,
+``A learning algorithm for Boltzmann machines'',
+\textit{Cognitive Science} \textbf{9}(1), 147--169 (1985).
+
+\bibitem{smolensky1986}
+P.~Smolensky,
+``Information processing in dynamical systems: Foundations of harmony theory'',
+in D.~E.~Rumelhart, J.~L.~McClelland (eds.), \textit{Parallel Distributed Processing}, Vol.~1, MIT Press, pp.~194--281 (1986).
+
+\bibitem{amit1985}
+D.~J.~Amit, H.~Gutfreund, H.~Sompolinsky,
+``Spin-glass models of neural networks'',
+\textit{Phys. Rev. A} \textbf{32}, 1007--1018 (1985).
+
+\bibitem{rumelhart1986}
+D.~E.~Rumelhart, G.~E.~Hinton, R.~J.~Williams,
+``Learning representations by back-propagating errors'',
+\textit{Nature} \textbf{323}, 533--536 (1986).
+
+\bibitem{hinton2002}
+G.~E.~Hinton,
+``Training products of experts by minimizing contrastive divergence'',
+\textit{Neural Computation} \textbf{14}(8), 1771--1800 (2002).
+
+\bibitem{hinton2006dbn}
+G.~E.~Hinton, S.~Osindero, Y.~W.~Teh,
+``A fast learning algorithm for deep belief nets'',
+\textit{Neural Computation} \textbf{18}(7), 1527--1554 (2006).
+
+\bibitem{hinton2006science}
+G.~E.~Hinton, R.~R.~Salakhutdinov,
+``Reducing the dimensionality of data with neural networks'',
+\textit{Science} \textbf{313}(5786), 504--507 (2006).
+
+\bibitem{krotov2016}
+D.~Krotov, J.~J.~Hopfield,
+``Dense associative memory for pattern recognition'',
+in \textit{Advances in Neural Information Processing Systems (NeurIPS)} \textbf{29} (2016).
+
+\bibitem{lecun2006tutorial}
+Y.~LeCun, S.~Chopra, R.~Hadsell, M.~Ranzato, F.~J.~Huang,
+``A tutorial on energy-based learning'',
+NYU/Courant Institute, version 1.0 (2006).
+
+\bibitem{nobel2024background}
+The Nobel Committee for Physics,
+``Scientific Background on the Nobel Prize in Physics 2024: For foundational discoveries and inventions that enable machine learning with artificial neural networks'',
+The Royal Swedish Academy of Sciences (2024).
+\url{https://www.nobelprize.org/uploads/2024/10/advanced-physicsprize2024.pdf}
+
+\bibitem{nobel2024press}
+The Nobel Prize,
+``Press release: The Nobel Prize in Physics 2024'',
+The Royal Swedish Academy of Sciences (8 October 2024).
+\url{https://www.nobelprize.org/prizes/physics/2024/press-release/}
+
+\end{thebibliography}
+
+\end{document}
