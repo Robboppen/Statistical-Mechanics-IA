@@ -264,6 +264,62 @@ Transición de fase T_c     ←────→    Cambio de régimen
 
 ---
 
+
+
+
+---
+### Inspiración física sin entrar en detalles técnicos.
+
+## La idea central: la naturaleza prefiere lo simple
+
+Imagina una pelota rodando en un paisaje de colinas y valles. Sin que nadie la empuje, la pelota tiende a caer hacia los valles — los puntos de menor energía. Si además hay algo de "agitación" en el sistema (como el calor), la pelota no se queda perfectamente quieta en el fondo del valle: vibra un poco, a veces sube parcialmente una colina cercana, pero rara vez escala una montaña entera.
+
+Esta es, en esencia, toda la física estadística resumida en una imagen: **los sistemas prefieren estados de baja energía, pero el "ruido" (la temperatura) les permite explorar otras posibilidades.**
+
+Los modelos probabilísticos en machine learning que toman inspiración de la física copian exactamente esta idea, pero en lugar de una pelota física, tienen una variable abstracta — puede ser una imagen, una palabra, una configuración de píxeles — y en lugar de un paisaje de colinas, tienen una función matemática que le asigna un "costo" a cada posibilidad.
+
+## La energía como medida de qué tan "normal" es algo
+
+En estos modelos, cada configuración posible de los datos recibe un número que llamamos **energía**. La regla es simple: configuraciones que se parecen a los datos reales reciben energía baja; configuraciones extrañas o poco probables reciben energía alta.
+
+Por ejemplo, si entrenas un modelo con fotos de gatos, una imagen que se parece a un gato tendrá energía baja. Una imagen de ruido aleatorio tendrá energía alta. El modelo no necesita "saber" qué es un gato en el sentido humano — simplemente aprende a asignar energías bajas a los patrones que ha visto repetidamente.
+
+Esto es exactamente la misma lógica que un físico usa para describir un sistema: la energía no es un castigo, es una medida de qué tan natural o esperable es una configuración.
+
+## De la energía a la probabilidad: el salto de Boltzmann
+
+Aquí es donde entra la idea más elegante de Boltzmann: convertir energía en probabilidad mediante una exponencial decreciente. Cuanto más baja la energía, más alta la probabilidad — pero de forma exponencial, no lineal. Esto significa que pequeñas diferencias de energía pueden traducirse en diferencias enormes de probabilidad.
+
+Esta receta — tomar algo que mide "qué tan malo" es un estado y convertirlo en "qué tan probable" es — se volvió universal. Aparece en termodinámica, en la forma en que las redes neuronales generativas modelan datos, y hasta en la función *softmax* que casi cualquier red neuronal de clasificación usa al final para decidir su respuesta.
+
+## El problema del "total": por qué normalizar es tan difícil
+
+Para que esos números se conviertan en una probabilidad real (que sume 1, como deben sumar todas las probabilidades), hace falta dividir por la suma de todas las posibilidades — todas las configuraciones, no solo las buenas. Ese "total" es lo que en física se llama función de partición, y en la práctica es una pesadilla computacional: para sistemas con muchas variables, el número de configuraciones posibles crece tan rápido que ni las computadoras más grandes pueden sumarlas todas.
+
+Este es el obstáculo que comparten físicos y científicos de datos por igual. Un físico que estudia un material magnético enfrenta exactamente el mismo problema matemático que un ingeniero entrenando un modelo generativo: ambos necesitan ese "total" para calcular probabilidades exactas, y ambos, en la práctica, tienen que conformarse con aproximarlo.
+
+## La solución compartida: no calcular todo, sino muestrear
+
+Como calcular el total exacto es inviable, tanto físicos como científicos de datos recurren a la misma estrategia: en lugar de enumerar todas las posibilidades, **generan muestras aleatorias siguiendo las reglas del sistema**, y dejan que esas muestras converjan naturalmente hacia las regiones de baja energía (alta probabilidad).
+
+Es como explorar un territorio desconocido no mapeándolo entero, sino caminando por él dejándote guiar por el instinto: bajas más fácilmente hacia los valles que subes hacia las montañas, y con suficientes pasos, tu trayectoria revela la forma del paisaje sin necesidad de haberlo visto completo.
+
+Esta técnica de muestreo — inventada originalmente para simular gases y materiales — es la misma maquinaria que hoy entrena modelos generativos modernos. El proceso de "ir refinando" un estado aleatorio hasta que se vuelve una imagen coherente, que ves en generadores de imágenes actuales, no es más que dejar que el sistema "se enfríe" gradualmente hacia un estado de baja energía, igual que un material se ordena al enfriarse.
+
+## El hilo conductor para la charla
+
+Si tuviera que resumir la narrativa completa en una frase: **los modelos probabilísticos modernos no inventaron una forma nueva de pensar la incertidumbre — heredaron la de la física estadística**, donde energía baja significa estabilidad y normalidad, donde la temperatura controla cuánto se permite explorar lo inusual, y donde la imposibilidad de calcular el total exacto obliga, tanto a físicos como a ingenieros, a conformarse con aproximaciones inteligentes basadas en muestreo aleatorio.
+
+Es un puente conceptual limpio: la misma intuición que explica por qué el hierro se magnetiza a bajas temperaturas, explica por qué una red neuronal generativa aprende a producir imágenes realistas.
+
+---
+
+
+
+
+
+
+
 ## 7. Referencias
 
 ### Fundamentos físicos e inferencia
@@ -300,6 +356,6 @@ Transición de fase T_c     ←────→    Cambio de régimen
 
 13. **Kingma, D.P. & Welling, M.** (2013). *Auto-Encoding Variational Bayes*. arXiv: 1312.6114.
 
----
+
 
 *Preparado para el repositorio del curso de Mecánica Estadística — IFA, UV.*
