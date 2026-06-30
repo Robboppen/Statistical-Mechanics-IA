@@ -2,7 +2,7 @@
 
 > **Contexto:** Mecánica Estadística — Instituto de Física y Astronomía, Universidad de Valparaíso  
 > **Foco:** Distribución de Boltzmann · Pesos probabilísticos · Función de partición · Ensembles como lenguaje de inferencia
-
+.
 ---
 
 ## Índice
