@@ -39,10 +39,10 @@ def fig_paisaje_energia():
     fig, ax1 = plt.subplots(figsize=(9, 5))
     ax1.plot(x, energy, color="#1f4e79", lw=3, label="Energía E(x)")
     ax1.fill_between(x, energy, energy.min() - 0.2, color="#1f4e79", alpha=0.08)
-    ax1.set_xlabel("Configuración x")
+    ax1.set_xlabel("x")
     ax1.set_ylabel("Energía", color="#1f4e79")
     ax1.tick_params(axis="y", labelcolor="#1f4e79")
-    ax1.set_title("Paisaje de energía: los valles son más probables")
+    #ax1.set_title("Paisaje de energía")
 
     ax2 = ax1.twinx()
     ax2.plot(x, prob, color="#c0392b", lw=2.5, ls="--", label="Probabilidad ∝ exp[-E(x)]")
@@ -54,7 +54,7 @@ def fig_paisaje_energia():
     for xm in sorted(minima):
         ym = np.interp(xm, x, energy)
         ax1.scatter([xm], [ym], s=90, color="#f1c40f", edgecolor="black", zorder=5)
-    ax1.text(-3.05, energy.max() - 0.5, "Baja energía\n→ alta probabilidad", color="#111111")
+    #ax1.text(-3.05, energy.max() - 0.5, "Baja energía\n→ alta probabilidad", color="#111111")
 
     lines = ax1.get_lines() + ax2.get_lines()
     ax1.legend(lines, [l.get_label() for l in lines], loc="upper center", frameon=False)
@@ -76,8 +76,8 @@ def fig_boltzmann_temperatura():
         ax.bar(states + (i - 1) * width, p, width=width, color=color, alpha=0.85, label=f"T = {temp}")
 
     ax.set_title("Distribución de Boltzmann para distintas temperaturas")
-    ax.set_xlabel("Microestado s")
-    ax.set_ylabel("P(s)")
+    ax.set_xlabel(r"Microestado $\mu$")
+    ax.set_ylabel(r"P($\mu$)")
     ax.set_xticks(states)
     ax.legend(frameon=False)
     ax.text(4.6, 0.43, "T baja: se concentra\nen mínima energía", color="#1f4e79")
@@ -110,7 +110,7 @@ def fig_rbm_arquitectura():
     ax.text(2, 0.35, "Capa visible\n(datos)", ha="center")
     ax.text(7.5, 0.35, "Capa oculta\n(variables latentes)", ha="center")
     ax.text(4.75, 5.35, "$w_{ij}$ = acoplamientos aprendibles", ha="center", fontsize=14)
-    ax.text(4.75, 0.95, "Restricción: sin conexiones visible-visible ni oculta-oculta", ha="center", color="#333333")
+    #ax.text(4.75, 0.95, "Restricción: sin conexiones visible-visible ni oculta-oculta", ha="center", color="#333333")
     save(fig, "03_rbm_arquitectura")
 
 
@@ -128,7 +128,7 @@ def fig_crecimiento_configuraciones():
     for k in [10, 20, 30]:
         ax.scatter([k], [2**k], color="#c0392b", s=70, zorder=5)
         ax.text(k - 1.2, 2**k * 1.8, f"2^{k} ≈ {2**k:.1e}", color="#c0392b")
-    ax.text(2, 2**26, "$Z=\\sum_s e^{-E(s)}$\ncrece exponencialmente", fontsize=14)
+    ax.text(2, 2**26, "$Z=\\sum_s e^{-E(\mu)}$\ncrece exponencialmente", fontsize=14)
     save(fig, "04_crecimiento_configuraciones")
 
 

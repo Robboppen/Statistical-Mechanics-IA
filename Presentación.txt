@@ -1,0 +1,36 @@
+1) Presentación
+Buenos días profesores y compañeros, el día de hoy junto a mi compañero Carlos Pincheira queremos hablarles sobre las máquinas de Boltzmann y su conexión a la inteligencia artificial.
+
+2) Energía y probabilidad
+
+Lo primero que debemos definir es: ¿qué es una máquina de Boltzmann? Corresponde a una red neuronal probabilística que asigna una energía a cada configuración de sus unidades. A partir de esa energía, la probabilidad de cada configuración se obtiene mediante la distribución de Boltzmann.
+
+Su aprendizaje consiste en ajustar los parámetros de la función de energía (los pesos) para que los datos reales queden ubicados en regiones de baja energía. En otras palabras, invertimos el procedimiento habitual de la mecánica estadística: en lugar de partir de una energía conocida para calcular probabilidades, definimos una función de energía con parámetros ajustables y la entrenamos para que las configuraciones observadas correspondan a mínimos de energía.
+
+Como ejemplo, observemos la Figura 1. La curva azul representa la energía de un sistema en función del estado x, y posee dos mínimos, uno más profundo que el otro. Según la distribución de Boltzmann, las configuraciones con menor energía tienen mayor probabilidad de ocurrir. Por ello, la curva roja alcanza sus máximos precisamente en los mínimos de la energía, siendo el peak más alto el asociado al valle de energía más profundo.
+
+3) De máxima entropía a Boltzmmann
+
+Ya vimos por qué la distribución de Boltzmann es la que debería usar un modelo que aprende, debido a que es la asignación de probabilidades menos sesgada, ya que nosotros solo conocemos la energía promedio del sistema.
+
+Aquí podemos ver las dos piezas matemáticas que sostienen esa idea, arriba tenemos la probabilidad de un microestado normalizado por la función de partición del ensemble canónico y abajo tenemos la entropía de Shannon, como se comprobó en el paper de Jaynes, estas dos ecuaciones no son independientes.
+
+La primera ecuación es lo que se obtiene al maximizar la segunda, lo cual está sujeto a conocer la energía promedio.
+
+En el gráfico de aquí, podemos ver la distribución de Boltzmann con distintas temperaturas para 8 microestados, en azul podemos ver la menor temperatura en donde el factor beta en este caso sería grande, por lo que la exponencial castiga fuertemente cualquier energía que no sea la mínima, para el caso de temperaturas altas, el factor beta es chico, dando una exponencial mucho más suave, y así la distribución se aplana, por lo que casi todos los microestados tienen probabilidad parecida.
+
+4) Máquinas de Boltzmann: Un ising que aprende
+
+Ahora vamos a lo concreto, ¿cómo se ve esto en un modelo real?
+
+La idea es tomar el modelo de ising de la mecánica estadística, en el cual las partículas pueden tener dos estados, análogo al espín, y usarlo como una red neuronal. Cada unidad de la red es como uno de esos espines, representadas por las "s" en la primera ecuación, por otro lado las conexiones entre estas está representada por el peso "w", la cual juega el papel de una constante de acoplamiento tipo Ising, esto nos dice que tan fuerte quieren dos unidades estar alineadas.
+
+La máquina de Boltzmann restriginda que vemos a la derecha, organizo esto en dos capas, una capa visible, que es donde entran los datos, y una capa oculta, que el modelo usa para capturar patrones que no vemos directaente.
+
+Se llama restringida porque solo hay conexiones entre las dos capas, no dentro de cada una, lo cual simplifica mucho a la hora de hacer las cuentas. Esto es lo que provoca que podamos escribirlo de forma matricial como en la segunda ecuación.
+
+Y ahora la gran pregunta, ¿cómo aprende?, el modelo mira dos cosas; como se correlacionan las unidades cuando le mostramos datos reales, y la correlación que el modelo genera por sí solo, muestreando su propia distribución de Boltzmann. 
+
+Si esas dos correlaciones son distintas, ajusta los pesos un poquito para achicar esa diferencia, repite este proceso muchas veces, y eventualmente el modelo aprende a generar patrones parecidos a los datos reales, sin que nadie le haya dicho explícitamente qué patrón buscar.
+
+
